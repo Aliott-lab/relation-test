@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>شاخص وضعیت رابطه | کلینیک سپهر آرامش</title>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --card-bg: #161f30;
+      --card-border: #24324a;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --input-bg: #0f172a;
+    }
+
+    * { box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 24px 12px; line-height: 1.7; }
+    .container { max-width: 860px; margin: 0 auto; background: var(--card-bg); padding: 35px 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--card-border); }
+
+    .clinic-brand { text-align: center; color: var(--primary); font-size: 1.15rem; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 5px; }
+    h1 { text-align: center; color: #ffffff; margin-top: 0; margin-bottom: 25px; font-size: 1.7rem; }
+    h2 { text-align: center; color: #ffffff; margin-bottom: 20px; font-size: 1.5rem; }
+
+    .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 30px; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 12px; border: 1px solid var(--card-border); }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-size: 0.85rem; margin-bottom: 6px; color: var(--text-muted); }
+    .form-group input, .form-group select { padding: 9px 12px; background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 8px; font-size: 0.95rem; color: #ffffff; outline: none; transition: 0.2s; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+
+    .questions-wrapper { display: flex; flex-direction: column; gap: 12px; }
+    .question-row { padding: 14px 16px; border-radius: 10px; background: rgba(15, 23, 42, 0.45); border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 10px; transition: 0.2s; }
+    .question-row:hover { border-color: #334155; background: rgba(15, 23, 42, 0.7); }
+    .question-title { font-size: 0.97rem; font-weight: 500; color: #e2e8f0; }
+
+    .options { display: flex; flex-wrap: wrap; gap: 12px; }
+    .options label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.9rem; color: var(--text-muted); background: var(--input-bg); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--card-border); transition: 0.2s; }
+    .options label:hover { color: #ffffff; border-color: var(--primary); }
+    .options input[type="radio"] { accent-color: var(--primary); width: 16px; height: 16px; }
+
+    button.submit-btn { display: block; width: 100%; max-width: 320px; margin: 35px auto 10px auto; padding: 14px 20px; background: linear-gradient(135deg, #0284c7, #0ea5e9); color: white; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3); }
+    button.submit-btn:hover { background: linear-gradient(135deg, #0369a1, #0284c7); transform: translateY(-1px); }
+    button.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    #result-view { display: none; }
+    
+    .overall-card { background: linear-gradient(145deg, #131c2e, #1a273e); border: 2px solid var(--primary); border-radius: 14px; padding: 25px; margin-bottom: 30px; box-shadow: 0 8px 24px rgba(56, 189, 248, 0.15); }
+    .overall-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .overall-header h3 { margin: 0; font-size: 1.3rem; color: #38bdf8; }
+    .overall-score-box { display: flex; align-items: center; gap: 10px; }
+    .overall-score { font-size: 1.7rem; font-weight: 800; color: #ffffff; }
+    .overall-interpretation { margin-top: 15px; padding: 14px; background: rgba(15, 23, 42, 0.6); border-radius: 8px; border-right: 4px solid var(--primary); font-size: 0.95rem; color: #e2e8f0; }
+
+    .charts-grid { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+    .chart-card { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px 20px; }
+    .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 500; }
+    .chart-title { color: #f8fafc; font-size: 1.02rem; }
+    .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: #000000; }
+
+    .clinic-footer { margin-top: 40px; padding: 25px 20px; background: rgba(15, 23, 42, 0.7); border-radius: 12px; border: 1px solid var(--card-border); text-align: center; }
+    .clinic-footer h3 { color: var(--primary); margin: 0 0 12px 0; font-size: 1.15rem; }
+    .clinic-footer p { margin: 6px 0; color: #cbd5e1; font-size: 0.95rem; }
+    .clinic-footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div id="survey-view">
+    <div class="clinic-brand">کلینیک سپهر آرامش</div>
+    <h1>شاخص وضعیت رابطه</h1>
+    
+    <div class="profile-grid">
+      <div class="form-group"><label>نام و نام خانوادگی:</label><input type="text" id="p_name" required></div>
+      <div class="form-group"><label>سن:</label><input type="number" id="p_age"></div>
+      <div class="form-group"><label>تحصیلات:</label><input type="text" id="p_edu"></div>
+      <div class="form-group"><label>شماره تماس:</label><input type="tel" id="p_phone" required></div>
+      <div class="form-group">
+        <label>وضعیت تأهل:</label>
+        <select id="p_married">
+          <option value="ازدواج کرده‌ام">ازدواج کرده‌ام</option>
+          <option value="ازدواج نکرده‌ام">ازدواج نکرده‌ام</option>
+        </select>
+      </div>
+      <div class="form-group"><label>سال ازدواج:</label><input type="text" id="p_m_year"></div>
+      <div class="form-group"><label>تعداد فرزند:</label><input type="number" id="p_children"></div>
+      <div class="form-group"><label>مدت آشنایی:</label><input type="text" id="p_dating"></div>
+    </div>
+
+    <form id="quiz-form">
+      <div class="questions-wrapper" id="questions-container"></div>
+      <button type="submit" id="submit-btn" class="submit-btn">ثبت پاسخ‌ها و محاسبه نتیجه</button>
+    </form>
+  </div>
+
+  <div id="result-view">
+    <div class="clinic-brand">کلینیک سپهر آرامش</div>
+    <h2>گزارش جامع وضعیت رابطه</h2>
+
+    <!-- کارت شاخص کلی با تعدیل ضربه‌گیر آشتی‌جویی -->
+    <div class="overall-card">
+      <div class="overall-header">
+        <h3>شاخص کلی تعارض و آسیب رابطه (با اثر ضربه‌گیر آشتی‌جویی)</h3>
+        <div class="overall-score-box">
+          <span class="overall-score" id="overall-percent-text"></span>
+          <span class="badge" id="overall-badge"></span>
+        </div>
+      </div>
+      <div style="position: relative; height: 65px;">
+        <canvas id="overall_chart"></canvas>
+      </div>
+      <div class="overall-interpretation" id="overall-interpretation-text"></div>
+    </div>
+
+    <h3 style="color: #e2e8f0; margin-top: 30px; font-size: 1.15rem;">تفکیک ابعاد یازده‌گانه رابطه</h3>
+    <div class="charts-grid" id="charts-wrapper"></div>
+
+    <div class="clinic-footer">
+      <h3>ارتباط با کلینیک سپهر آرامش</h3>
+      <p><strong>آدرس:</strong> نبش احمد آباد ۷ - ساختمان گوهرشاد - طبقه سوم - واحد ۳۰۹</p>
+      <p><strong>تلفن تماس و مشاوره:</strong> <a href="tel:09150703239" dir="ltr">0915 070 3239</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==========================================
+// آدرس وب‌اپلیکیشن گوگل‌شیت را اینجا قرار دهید:
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxJskAjHrcMDeHoudvkxNi4eCZ9XiFQ8AQq4zW6BbaFwx80zAc_ieKHYS8ALE-wueyZYA/exec";
+// ==========================================
+
+const subscales = [
+  { id: 1, title: "۱. عیب‌جویی", range: [1, 7], maxRaw: 10.5, isDestructive: true },
+  { id: 2, title: "۲. خوار کردن", range: [8, 14], maxRaw: 10.5, isDestructive: true },
+  { id: 3, title: "۳. مقابله", range: [15, 21], maxRaw: 10.5, isDestructive: true },
+  { id: 4, title: "۴. دوری", range: [22, 28], maxRaw: 10.5, isDestructive: true },
+  { id: 5, title: "۵. آشتی‌جویی", range: [29, 35], maxRaw: 14.0, isDestructive: false },
+  { id: 6, title: "۶. آغاز طوفانی", range: [36, 42], maxRaw: 10.5, isDestructive: true },
+  { id: 7, title: "۷. فوران هیجان", range: [43, 49], maxRaw: 10.5, isDestructive: true },
+  { id: 8, title: "۸. سردی", range: [50, 56], maxRaw: 10.5, isDestructive: true },
+  { id: 9, title: "۹. بی‌اعتمادی", range: [57, 63], maxRaw: 10.5, isDestructive: true },
+  { id: 10, title: "۱۰. نارضایی جنسی", range: [64, 70], maxRaw: 10.5, isDestructive: true },
+  { id: 11, title: "۱۱. ناتوانی حل مسئله", range: [71, 77], maxRaw: 10.5, isDestructive: true }
+];
+
+const questions = [
+  "در هنگام اختلاف، به جای شکایت از رفتار خاص، به شخصیت طرف مقابل حمله می‌کنیم.",
+  "در مشاجرات، از کلماتی مانند «همیشه» یا «هرگز» برای توصیف رفتار طرف مقابل استفاده می‌کنیم.",
+  "در زمان عصبانیت، به جای قضاوت در مورد رفتار، به دنبال قضاوت در باره شخصیت هستیم.",
+  "در دعواها، به جای بیان نیاز خود، طرف مقابل را به خاطر یک نقص شخصیتی سرزنش می‌کنیم.",
+  "بسیاری از مشکلات را به تنبلی یا بی‌فکری طرف مقابل نسبت می‌دهیم.",
+  "در حین مشاجره، به جای گلایه از یک رفتار، به طرف مقابل برچسب شخصیتی می زنیم.",
+  "در مشاجرات، احساس می ‌کنیم مورد قضاوت یا حمله به شخصیت خود قرار می ‌گیریم.",
+  "در حین مشاجره، طرف مقابل را مسخره یا تحقیر می‌کنیم.",
+  "در گفتگوها، از لحن طعنه ‌آمیز یا پرخاشگرانه استفاده می‌کنیم.",
+  "در رابطه، احساس برتری نسبت به طرف مقابل داریم.",
+  "در دعواها، حرکات بدنی تحقیرآمیز  انجام می دهیم مثل چشم ‌غره  یا ادا درآوردن.",
+  "به طرف مقابل برچسب ‌هایی مثل «احمق» یا «تنبل» می‌زنیم.",
+  "دستاوردها، تلاش‌ها یا نظرات طرف مقابل را بی ‌ارزش جلوه می‌دهیم.",
+  "از لحن یا کلمات طرف مقابل احساس حقارت می‌کنیم.",
+  "وقتی گلایه ای می‌شود، بلافاصله دلیل می‌آوریم که تقصیر من نبوده.",
+  "در مشاجرات، طرف مقابل را به ‌عنوان مقصر اصلی معرفی می‌کنیم.",
+  "برایمان سخت است که یک اشتباه را بدون بهانه ‌آوردن بپذیریم.",
+  "در مشاجرات، بیشتر به فکر دفاع از خودمان هستیم تا درک حرف طرف مقابل.",
+  "اگر اشتباهی را بپذیریم بلافاصله توجیهش می کنیم(مثال: «من» سرت داد زدم «اما» تقصیر خودت بود..)",
+  "حتی وقتی اشتباه برایمان آشکار است، شرایط را توجیه می‌کنیم.",
+  "در زمان بحث، تقصیر و اشتباهمان  را قبول نمی‌کنیم.",
+  "در وسط مشاجره، ناگهان سکوت می شود و دیگر پاسخی نمی‌دهیم.",
+  "وقتی بحث داغ می‌شود، محل را ترک یا خود را مشغول کاری می‌کنیم.",
+  "ترجیح می‌دهیم سکوت کنیم تا اینکه وارد درگیری شویم.",
+  "در حین بحث، سکوت می‌کنیم  و واکنشی نشان نمی‌دهیم.",
+  "معمولاً بعد از مشاجره، حتی تماس چشمی را قطع می‌کنیم.",
+  "وقتی طرف مقابل ناراحت است، ترجیح می‌دهیم به کار خود مشغول شده تا واکنش نشان دهیم.",
+  "اغلب اوقات پس از مشاجرات، ارتباط را قطع کرده و از یکدیگر فاصله می گیریم.",
+  "در هنگام مشاجره، هر یک از ما به راحتی می‌تواند اشتباه خود را پذیرفته و عذرخواهی کند.",
+  "معمولا وقتی یک نفر عذرخواهی می کند طرف مقابل آن را می پذیرد.",
+  "هر یک از ما می‌تواند شوخ‌طبعی را حتی هنگام جر و بحث حفظ کند تا تنش کاهش یابد.",
+  "وقتی یکی از ما به دیگری می‌گوید که نحوه ارتباطش اشکال دارد، طرف مقابل معمولاً آن را می‌پذیرد و گوش می‌کند.",
+  "تلاش‌های هر یک از ما برای اصلاح گفت‌وگوهای منفی معمولاً مؤثر است و اوضاع را بهتر می‌کند.",
+  "در هنگام اختلاف نظر معمولاً می‌توانیم به تفاهم برسیم.",
+  "حتی موقع جر و بحث، می‌توانیم مهربان بوده و از کارهای خوب طرف مقابل قدردانی کنیم.",
+  "در ابتدای بحث، به جای اشاره به موضوع خاص، از جملات کلی و مبهم استفاده می‌کنیم (مثلاً «تو همیشه خراب می‌کنی»)؟",
+  "در ابتدای بحث، به جای اشاره به یک رفتار خاص، به شخصیت طرف مقابل حمله می‌کنیم (مثلاً «تو آدم بی‌مسئولیتی هستی»)؟",
+  "شروع گفتگو با لحن بلند یا تند (آزاردهنده) همراه است.",
+  "در شروع بحث، از عبارات اتهامی مانند «تو مقصری» یا «این تقصیر توست» استفاده می کنیم؟",
+  "بیان ناراحتی با حالت تدافعی یا پرخاشگرانه همراه است؟",
+  "در شروع بحث، طرف مقابل را نادیده گرفته شده یا بی‌ارزش جلوه داده می شود (مثلاً «به حرفت گوش نمی‌دم چون منطقی نیستی»)؟",
+  "شروع گفتگو با اتهام و تهمت به  طرف مقابل همراه است (مثلاً «این کار رو عمداً انجام دادی» یا «به عمد داری اذیتم می‌کنی».",
+  "گفت‌وگوهایمان خیلی زود بالا می‌گیرد.",
+  "آرام شدن در حین دعوا برایمان سخت است.",
+  "در حین دعوا حرفی می‌زنیم که بعداً پشیمانی می‌آورد.",
+  "در بحث ها معمولا داد می‌زنیم.",
+  "وقتی خشم بالا میزند کنترلی روی گفتار و رفتارمان نداریم.",
+  "موقع دعوا آنقدر هیجاناتمان فوران می کند که دوست داریم فرار کنیم.",
+  "در هنگام دعوا نمیتوانیم به سادگی آرام شویم.",
+  "در این ازدواج، احساس تنهایی می کنیم.",
+  "اغلب اوقات در این رابطه احساس دلسردی می‌کنیم.",
+  "در رابطه  احساس صمیمیت نمی‌کنیم.",
+  "امید چندانی به بهتر شدن رابطه مان نداریم.",
+  "ارتباط عاطفی هیجانی نداریم و از هم دوریم.",
+  "حرف عاشقانه ای بین ما رد و بدل نمی شود.",
+  "نسبت به همسرم بی تفاوت شده ام.",
+  "در رابطه مان احساس ناامنی و عدم اطمینان داریم.",
+  "نمی‌توانیم به راحتی، مسائل، و جزئیات زندگی را با یکدیگر در میان بگذاریم و از این کار اجتناب می‌کنیم.",
+  "به وعده‌ها، قول‌ها و تعهداتی که به یکدیگر می‌دهیم، پایبند نیستیم.",
+  "در غیاب یکدیگر، نسبت به وفاداری و رفتار همسرمان نگرانی، شک و تردید داریم.",
+  "در خصوص روابطمان با جنس مخالف نگرانیم.",
+  "یکی از تنشهای مهم به دلیل حساسیتمان نسبت به خودمانی شدن با جنس مخالف است.",
+  "نسبت به آینده این رابطه و ادامه زندگی مشترک، ناامید و مردد هستیم.",
+  "از صحبت کردن درباره نیازها، خواسته‌ها و علایق جنسی خود با یکدیگر اجتناب می‌کنیم.",
+  "از کیفیت یا تنوع رابطه جنسی مان احساس نارضایتی و ناکامی داریم.",
+  "پیشنهاد یا تمایل جنسی یکی از ما، از طرف مقابل با بی‌اعتنایی، تمسخر یا تندی رد می‌شود.",
+  "از تعداد دفعات رابطه جنسی مان ناراضی هستیم.",
+  "صمیمیت فیزیکی (مانند بغل کردن، بوسیدن و نوازش بدون رابطه جنسی) بین ما به شدت کاهش یافته یا قطع شده است.",
+  "وقتی در رابطه جنسی مشکلی پیش می‌آید، درباره آن صحبت نمی کنیم.",
+  "در برقراری رابطه جنسی، مشکل داریم.",
+  "در هنگام بروز مشکل یا اختلاف، به جای یافتن راه‌حل مشترک، تقصیر را گردن هم می‌اندازیم.",
+  "تلاشهایمان برای حل اختلافات معمولا به نتیجه نمی رسد.",
+  "در مشکلات به جای حل اختلاف، دچار تنش و بحث بیشتر می شویم.",
+  "در بحث‌ها، فقط به نیازهای خود توجه می‌کنیم و به دغدغه‌ها و نیازهای طرف مقابل بی‌توجه هستیم.",
+  "برای حل مشکلات و جلوگیری از تکرار آن، با هم صحبت نمی‌کنیم و مشکل را مسکوت می‌گذاریم.",
+  "اگر در حل یک مسئله به بن‌بست برسیم، از کمک گرفتن از مشاور یا فرد سوم آگاه و بی‌طرف امتناع می‌کنیم.",
+  "راه حل هایی که برای حل مسائل پیشنهاد میدهیم معمولا مورد پسند طرف مقابل نیست."
+];
+
+const container = document.getElementById("questions-container");
+
+questions.forEach((qText, index) => {
+  const qNum = index + 1;
+  const qDiv = document.createElement("div");
+  qDiv.className = "question-row";
+  qDiv.innerHTML = `
+    <div class="question-title"><strong>${qNum}.</strong> ${qText}</div>
+    <div class="options">
+      <label><input type="radio" name="q_${qNum}" value="none" required> هیچ‌کدام</label>
+      <label><input type="radio" name="q_${qNum}" value="me"> فقط من</label>
+      <label><input type="radio" name="q_${qNum}" value="spouse"> فقط همسرم</label>
+      <label><input type="radio" name="q_${qNum}" value="both"> هر دو</label>
+    </div>
+  `;
+  container.appendChild(qDiv);
+});
+
+function getScore(qIndex, answer) {
+  const isReconciliation = (qIndex >= 29 && qIndex <= 35);
+  if (isReconciliation) {
+    if (answer === "both") return 2.0;
+    if (answer === "me" || answer === "spouse") return 1.5;
+    return 0.0;
+  } else {
+    if (answer === "both") return 1.5;
+    if (answer === "me" || answer === "spouse") return 1.0;
+    return 0.0;
+  }
+}
+
+function getColorInfo(percentage) {
+  if (percentage <= 25) return { color: "#22c55e", label: "سالم و مطلوب" };
+  if (percentage <= 50) return { color: "#facc15", label: "متوسط" };
+  if (percentage <= 75) return { color: "#fb923c", label: "شدید" };
+  return { color: "#f87171", label: "هشدار / بحرانی" };
+}
+
+document.getElementById("quiz-form").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const submitBtn = document.getElementById("submit-btn");
+  submitBtn.disabled = true;
+  submitBtn.innerText = "در حال پردازش و ثبت داده‌ها...";
+
+  const formData = new FormData(e.target);
+  let reconciliationPercent = 0;
+  let destructiveSum = 0;
+  let scoresMap = {};
+
+  const results = subscales.map(scale => {
+    let totalScore = 0;
+    for (let q = scale.range[0]; q <= scale.range[1]; q++) {
+      const ans = formData.get(`q_${q}`);
+      totalScore += getScore(q, ans);
+    }
+    const percent = Math.min(100, Math.round((totalScore / scale.maxRaw) * 100));
+    scoresMap[scale.title] = percent;
+
+    if (scale.isDestructive) {
+      destructiveSum += percent;
+    } else {
+      reconciliationPercent = percent;
+    }
+
+    return {
+      title: scale.title,
+      percent: percent,
+      colorInfo: getColorInfo(percent)
+    };
+  });
+
+  // محاسبه روش ۲: D * (1 - R / 200)
+  const avgDestructive = destructiveSum / 10;
+  const finalDamageScore = Math.max(0, Math.min(100, Math.round(avgDestructive * (1 - (reconciliationPercent / 200)))));
+  const finalColor = getColorInfo(finalDamageScore);
+
+  // پیام تفسیری پویا
+  let interpretationText = "";
+  if (finalDamageScore <= 25) {
+    interpretationText = "پیام بالینی: رابطه در محدوده سالم و ایمن قرار دارد. اثر ضربه‌گیر تلاش‌های آشتی‌جویانه به خوبی تنش‌های روزمره را خنثی کرده و ثبات عاطفی برقرار است.";
+  } else if (finalDamageScore <= 50) {
+    interpretationText = "پیام بالینی: تعارضات و آسیب‌های رابطه در سطح متوسط است. هرچند نشانه‌هایی از دلخوری دیده می‌شود، اما مهارت‌های ترمیم مانع از بحرانی شدن شرایط شده‌اند؛ نیاز به بازنگری الگوهای ارتباطی وجود دارد.";
+  } else if (finalDamageScore <= 75) {
+    interpretationText = "پیام بالینی: سطح آسیب و فرسایش رابطه بالاست. تلاش‌های آشتی‌جویی دیگر به تنهایی توان مهار الگوهای دفاعی و سردی را ندارند. توصیه جدی به بهره‌گیری از جلسات زوج‌درمانی می‌شود.";
+  } else {
+    interpretationText = "پیام بالینی (هشدار): رابطه در وضعیت بحرانی و فرسودگی شدید قرار گرفته است. مکانیزم‌های دفاعی حاکم بوده و اقدامات ترمیمی ناکام مانده‌اند؛ مداخله فوری تخصصی الزامی است.";
+  }
+
+  // آماده‌سازی داده برای ارسال به گوگل شیت
+  const payload = {
+    name: document.getElementById("p_name").value,
+    age: document.getElementById("p_age").value,
+    edu: document.getElementById("p_edu").value,
+    phone: document.getElementById("p_phone").value,
+    married: document.getElementById("p_married").value,
+    m_year: document.getElementById("p_m_year").value,
+    children: document.getElementById("p_children").value,
+    dating: document.getElementById("p_dating").value,
+    finalDamageScore: finalDamageScore,
+    scores: scoresMap
+  };
+
+  // ارسال داده به شیت (در پس‌زمینه بدون ایجاد مانع)
+  if (GOOGLE_SHEET_URL && !GOOGLE_SHEET_URL.includes("YOUR_GOOGLE")) {
+    try {
+      fetch(GOOGLE_SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      console.error("خطا در ارسال به گوگل شیت:", err);
+    }
+  }
+
+  // نمایش نتایج
+  document.getElementById("survey-view").style.display = "none";
+  const resultView = document.getElementById("result-view");
+  resultView.style.display = "block";
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // نمودار کل شاخص آسیب
+  document.getElementById("overall-percent-text").innerText = finalDamageScore + "٪";
+  const overallBadge = document.getElementById("overall-badge");
+  overallBadge.innerText = finalColor.label;
+  overallBadge.style.backgroundColor = finalColor.color;
+  document.getElementById("overall-interpretation-text").innerText = interpretationText;
+
+  const overallCtx = document.getElementById("overall_chart").getContext("2d");
+  new Chart(overallCtx, {
+    type: "bar",
+    data: {
+      labels: ["شاخص آسیب کلی"],
+      datasets: [{
+        data: [finalDamageScore],
+        backgroundColor: finalColor.color,
+        borderRadius: 8,
+        barThickness: 26
+      }]
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { min: 0, max: 100, ticks: { color: "#94a3b8", stepSize: 25, callback: (v) => v + "%" }, grid: { color: "#1e293b" } },
+        y: { display: false }
+      }
+    }
+  });
+
+  // رسم ۱۱ نمودار دیگر
+  const chartsWrapper = document.getElementById("charts-wrapper");
+  chartsWrapper.innerHTML = "";
+
+  results.forEach((item, index) => {
+    const card = document.createElement("div");
+    card.className = "chart-card";
+    card.innerHTML = `
+      <div class="chart-header">
+        <span class="chart-title">${item.title}</span>
+        <div>
+          <span style="font-size: 1.15rem; margin-left: 10px; font-weight: bold; color: #ffffff;">${item.percent}٪</span>
+          <span class="badge" style="background-color: ${item.colorInfo.color};">${item.colorInfo.label}</span>
+        </div>
+      </div>
+      <div style="position: relative; height: 50px;">
+        <canvas id="chart_${index}"></canvas>
+      </div>
+    `;
+    chartsWrapper.appendChild(card);
+
+    const ctx = document.getElementById(`chart_${index}`).getContext("2d");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["درصد"],
+        datasets: [{
+          data: [item.percent],
+          backgroundColor: item.colorInfo.color,
+          borderRadius: 8,
+          barThickness: 20
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => `میزان: ${context.raw}٪ (${item.colorInfo.label})`
+            }
+          }
+        },
+        scales: {
+          x: { min: 0, max: 100, ticks: { color: "#94a3b8", stepSize: 25, callback: (v) => v + "%" }, grid: { color: "#1e293b" } },
+          y: { display: false }
+        }
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
