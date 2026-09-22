@@ -52,15 +52,8 @@
 
     #result-view { display: none; }
     
-    .chart-box-card { background: rgba(15, 23, 42, 0.7); border: 1px solid var(--card-border); border-radius: 14px; padding: 22px; margin-bottom: 30px; }
+    .chart-box-card { background: rgba(15, 23, 42, 0.7); border: 1px solid var(--card-border); border-radius: 14px; padding: 22px; margin-top: 15px; margin-bottom: 20px; }
     .chart-box-card h3 { margin: 0 0 16px 0; color: var(--primary); font-size: 1.2rem; text-align: center; }
-
-    .clinical-interpretations-container { display: flex; flex-direction: column; gap: 14px; margin-top: 25px; }
-    .interpretation-item { background: rgba(15, 23, 42, 0.55); border-right: 4px solid var(--primary); border-radius: 8px; padding: 12px 16px; }
-    .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .item-title { font-weight: bold; font-size: 0.98rem; color: #f8fafc; }
-    .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: #000000; }
-    .item-desc { font-size: 0.88rem; color: #cbd5e1; margin: 0; line-height: 1.6; }
 
     .clinic-footer { margin-top: 40px; padding: 25px 20px; background: rgba(15, 23, 42, 0.7); border-radius: 12px; border: 1px solid var(--card-border); text-align: center; }
     .clinic-footer h3 { color: var(--primary); margin: 0 0 12px 0; font-size: 1.15rem; }
@@ -108,17 +101,13 @@
     </div>
     <h2>گزارش جامع وضعیت رابطه</h2>
 
-    <!-- نمودار ستونی سیزده‌گانه -->
+    <!-- صرفاً نمودار ستونی با برچسب‌های ۱ تا ۱۳ -->
     <div class="chart-box-card">
       <h3>پروفایل نمرات و شاخص‌های رابطه (ستون‌های ۱ تا ۱۳)</h3>
-      <div style="position: relative; height: 350px;">
+      <div style="position: relative; height: 380px;">
         <canvas id="main_comparison_chart"></canvas>
       </div>
     </div>
-
-    <!-- بخش توصیف بالینی متناسب با نمرات -->
-    <h3 style="color: #e2e8f0; margin-top: 30px; font-size: 1.15rem;">ارزیابی و توصیف بالینی نتایج</h3>
-    <div class="clinical-interpretations-container" id="interpretations-wrapper"></div>
 
     <div class="clinic-footer">
       <h3>ارتباط با کلینیک سپهر آرامش</h3>
@@ -166,7 +155,7 @@ marriedSelect.addEventListener("change", function() {
   }
 });
 
-// ۱۰ بعد آسیب‌زا
+// ۱۰ بعد آسیب‌زا (ستون‌های ۱ تا ۱۰)
 const destructiveSubscales = [
   { id: 1, title: "عیب‌جویی", range: [1, 7], maxRaw: 8.4 },
   { id: 2, title: "خوار کردن", range: [8, 14], maxRaw: 8.4 },
@@ -180,7 +169,7 @@ const destructiveSubscales = [
   { id: 10, title: "ناتوانی در حل تعارض", range: [71, 77], maxRaw: 8.4 }
 ];
 
-// بعد تلاش‌های ترمیمی
+// بعد تلاش‌های ترمیمی (ستون ۱۱)
 const repairSubscale = { id: 11, title: "تلاش‌های ترمیمی", range: [29, 35], maxRaw: 10.5 };
 
 const questions = [
@@ -281,7 +270,7 @@ questions.forEach((qText, index) => {
   container.appendChild(qDiv);
 });
 
-// ضرایب جدید
+// ضرایب نمره‌گذاری
 function getScore(qIndex, answer) {
   const isRepair = (qIndex >= 29 && qIndex <= 35);
   if (isRepair) {
@@ -295,101 +284,18 @@ function getScore(qIndex, answer) {
   }
 }
 
-function getColorInfo(percentage, isDestructive = true) {
+function getColor(percentage, isDestructive = true) {
   if (isDestructive) {
-    if (percentage <= 25) return { color: "#22c55e", label: "سالم و مطلوب" };
-    if (percentage <= 50) return { color: "#facc15", label: "متوسط" };
-    if (percentage <= 75) return { color: "#fb923c", label: "شدید" };
-    return { color: "#f87171", label: "بحرانی" };
+    if (percentage <= 25) return "#22c55e";
+    if (percentage <= 50) return "#facc15";
+    if (percentage <= 75) return "#fb923c";
+    return "#f87171";
   } else {
-    if (percentage >= 76) return { color: "#22c55e", label: "بسیار مطلوب و عالی" };
-    if (percentage >= 51) return { color: "#facc15", label: "خوب و قابل قبول" };
-    if (percentage >= 26) return { color: "#fb923c", label: "ضعیف" };
-    return { color: "#f87171", label: "بسیار ضعیف" };
+    if (percentage >= 76) return "#22c55e";
+    if (percentage >= 51) return "#facc15";
+    if (percentage >= 26) return "#fb923c";
+    return "#f87171";
   }
-}
-
-// تولید توصیف بالینی کوتاه متناسب با درصد نمره
-function getClinicalInterpretation(type, percent) {
-  if (type === "عيب‌جويی") {
-    if (percent <= 25) return "گفتگوها با کمترین حمله به شخصیت همراه بوده و تمرکز زوجین بر حل رفتار مشخص است.";
-    if (percent <= 50) return "گاهی شکایت‌ها به سمت کلی‌گویی و سرزنش متمایل می‌شود که نیازمند دقت در انتخاب کلمات است.";
-    if (percent <= 75) return "عیب‌جویی و برچسب‌زنی مکرر مانع از شنیده شدن اصل نیازهای عاطفی طرفین شده است.";
-    return "حملات شدید شخصیتی در تعارضات حاکم است که احساس بی‌ارزشی عمیقی در طرف مقابل ایجاد می‌کند.";
-  }
-  if (type === "خوار کردن") {
-    if (percent <= 25) return "احترام متقابل و شأن فردی طرفین در هنگام تنش‌ها به خوبی حفظ می‌شود.";
-    if (percent <= 50) return "گاهی لحن طعنه‌آمیز یا قضاوت برتر دیده می‌شود که در صورت مهارنشدن فرسایش عاطفی می‌آورد.";
-    if (percent <= 75) return "استفاده از کنایه، تمسخر و زبان بدن تحقیرآمیز، امنیت روانی رابطه را خدشه‌دار کرده است.";
-    return "رفتارهای تحقیرآمیز و القای حس کهتری در سطح خطرناکی فعال بوده و مخرب‌ترین عامل تخریب رابطه است.";
-  }
-  if (type === "مقابله") {
-    if (percent <= 25) return "پذیرش سهم فردی در اشتباهات بالاست و حالت تدافعی اندکی در تعارضات مشاهده می‌شود.";
-    if (percent <= 50) return "توجیه خطاها و بهانه‌تراشی گاهی مانع از درک کامل دیدگاه همسر در مشاجرات می‌شود.";
-    if (percent <= 75) return "حالت تدافعی مزمن و انتقال مداوم تقصیر به دیگری مانع از به نتیجه رسیدن گفتگوها شده است.";
-    return "انکار شدید مسئولیت فردی و مقصردانستن مطلق طرف مقابل، فضا را به بن‌بست دفاعی کشانده است.";
-  }
-  if (type === "دوری") {
-    if (percent <= 25) return "حفظ ارتباط چشمی و حضور هیجانی در طول بحث‌ها مطلوب بوده و از سکوت قهرآمیز پرهیز می‌شود.";
-    if (percent <= 50) return "گاهی در اوج تنش عقب‌نشینی هیجانی رخ می‌دهد که نیازمند بازگشت ایمن به گفتگو است.";
-    if (percent <= 75) return "دیوارکشی، ترک مکرر موقعیت و بی‌اعتنایی طولانی‌مدت به عنوان واکنش دفاعی به کار گرفته می‌شود.";
-    return "انقطاع عاطفی شدید و سکوت انسدادی رابطه را در حالت فلج ارتباطی قرار داده است.";
-  }
-  if (type === "آغاز طوفانی") {
-    if (percent <= 25) return "ورود به گفتگوها نرم، آرام و بدون تحریک تهاجمی صورت می‌پذیرد.";
-    if (percent <= 50) return "شروع مباحث گاهی با لحن تند همراه است که پتانسیل شعله‌ور ساختن زودهنگام تنش را دارد.";
-    if (percent <= 75) return "اغلب گفتگوها با اتهام و کلمات منفی آغاز شده که مسیر حل مسئله را از همان ابتدا منحرف می‌سازد.";
-    return "گفتگوها به صورت مداوم با تندی شدید و پرخاش آغاز شده و پیش از شکل‌گیری تبادل نظر ناکام می‌ماند.";
-  }
-  if (type === "فوران هیجان") {
-    if (percent <= 25) return "کنترل خشم و خودآرام‌سازی هیجانی در هنگام بحران‌ها در سطح بسیار رضایت‌بخشی قرار دارد.";
-    if (percent <= 50) return "در مشاجرات شدید غلبه هیجان رخ می‌دهد اما امکان بازیابی آرامش هنوز وجود دارد.";
-    if (percent <= 75) return "برانگیختگی فیزیولوژیک بالا و رفتارهای تکانشی تفکر منطقی را در زمان تنش کاملاً مختل می‌کند.";
-    return "طغیان شدید و سریع خشم مانع از هرگونه مهار رفتار شده و رابطه را متشنج می‌سازد.";
-  }
-  if (type === "سردی") {
-    if (percent <= 25) return "محبت، ابراز صمیمیت کلامی و پیوند عاطفی گرم میان زوجین به قوت جریان دارد.";
-    if (percent <= 50) return "کاهش مقطعی کلمات محبت‌آمیز نشانه‌ای از نیاز به تجدید صمیمیت و وقت‌گذرانی مشترک است.";
-    if (percent <= 75) return "دلسردی و احساس تنهایی چشمگیری در رابطه تجربه شده و فاصله عاطفی رو به افزایش است.";
-    return "بی‌تفاوتی و ناامیدی عمیق نسبت به آینده، گرمای رابطه را به سمت انجماد عاطفی برده است.";
-  }
-  if (type === "بی‌اعتمادی") {
-    if (percent <= 25) return "امنیت روانی بالا، صداقت در مراودات و وفاداری عمیق متقابل میان زوجین حاکم است.";
-    if (percent <= 50) return "تردیدها یا حساسیت‌هایی در خصوص حدومرزها وجود دارد که نیازمند شفاف‌سازی متقابل است.";
-    if (percent <= 75) return "شک، عدم اطمینان به تعهدات و پنهان‌کاری، پایه‌های اعتماد طرفین را تضعیف نموده است.";
-    return "بحران جدی در وفاداری و ناامنی شدید روانی مانع از شکل‌گیری پیوند امن در رابطه است.";
-  }
-  if (type === "نارضایی جنسی") {
-    if (percent <= 25) return "صمیمیت فیزیکی، نوازش و رضایت کلی از کیفیت رابطه جنسی در سطح بسیار سالمی قرار دارد.";
-    if (percent <= 50) return "گفتگو درباره ترجیحات جنسی و بازنگری در دفعات نزدیکی می‌تواند سطح رضایت را بهبود بخشد.";
-    if (percent <= 75) return "ناکامی، عدم تطابق میل جنسی و کاهش محسوس تماس بدنی ایجاد فاصله کرده است.";
-    return "اجتناب کامل، رد تمایلات و عدم رضایت حاد جنسی، فشار روانی شدیدی بر تعهد زناشویی وارد کرده است.";
-  }
-  if (type === "ناتوانی در حل تعارض") {
-    if (percent <= 25) return "مهارت‌های همفکری، گوش دادن فعال و دستیابی به مصالحه در بالاترین کارآمدی قرار دارد.";
-    if (percent <= 50) return "حل تعارضات نیازمند زمان و هدایت ساختاریافته‌تری است تا منجر به تکرار مشکلات نشود.";
-    if (percent <= 75) return "مشکلات حل‌نشده انباشته شده و گفتگوها به جای ارائه راه‌حل مشترک به تنش افزون‌تر می‌انجامد.";
-    return "ناتوانی ساختاری در دستیابی به توافق و اجتناب از مداخله تخصصی، بحران‌ها را مزمن کرده است.";
-  }
-  if (type === "تلاش‌های ترمیمی") {
-    if (percent >= 76) return "قابلیت عالی در شوخ‌طبعی مثبت، عذرخواهی به‌موقع و خنثی‌سازی تنش‌های روزمره فعال است.";
-    if (percent >= 51) return "اقدامات ترمیمی تا حدی اثربخش است ولی نیازمند تقویت در نحوه شنیدن پیام‌های عذرخواهی است.";
-    if (percent >= 26) return "تلاش‌های آشتی‌جویانه به ندرت آغاز شده یا از سوی طرف مقابل پس زده می‌شود.";
-    return "فقدان سازوکارهای مصالحه و پذیرش خطا، اثر محافظت‌کننده رابطه را تقریباً خنثی کرده است.";
-  }
-  if (type === "وضعیت کلی بدون تلاش‌های ترمیمی") {
-    if (percent <= 25) return "پایه آسیب‌های تعاملی بسیار پایین بوده و ساختار عمومی تعاملات در بستری ایمن جریان دارد.";
-    if (percent <= 50) return "فرسایش تعاملی در سطح میانه است که با هوشیاری زوجین قابل کنترل و تعدیل خواهد بود.";
-    if (percent <= 75) return "مجموعه آسیب‌های تعاملی وزن سنگینی پیدا کرده و فشار قابل توجهی بر ثبات رابطه می‌آورد.";
-    return "بار تخریبی مولفه‌ها بدون حضور عوامل کاهنده، رابطه را در آستانه فرسودگی حاد قرار داده است.";
-  }
-  if (type === "وضعیت کلی با تلاش‌های ترمیمی") {
-    if (percent <= 25) return "تلاش‌های ترمیمی تنش‌های موجود را مهار کرده و تعادل و سلامت نهایی رابطه را تضمین نموده است.";
-    if (percent <= 50) return "مهارت‌های ترمیمی تا حدودی اثر مخرب تعارضات را کاهش داده‌اند اما نیازمند مراقبت مداوم است.";
-    if (percent <= 75) return "با وجود برخی اقدامات بازدارنده، آسیب‌ها فراتر از توان ترمیمی موجود بوده و مداخله بالینی توصیه می‌شود.";
-    return "آسیب کلی بالا همراه با ناکامی در ترمیم، رابطه را در وضعیت قرمز و نیازمند مشاوره تخصصی فوری قرار داده است.";
-  }
-  return "";
 }
 
 document.getElementById("quiz-form").addEventListener("submit", async function(e) {
@@ -400,56 +306,53 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
   submitBtn.innerText = "در حال پردازش داده‌ها...";
 
   const formData = new FormData(e.target);
-  let destructiveSum = 0;
+  let totalDestructiveRaw = 0;
   let scoresMap = {};
 
-  // محاسبه ۱۰ بعد مخرب
+  // محاسبه ۱۰ بعد آسیب‌زا
   const destructiveResults = destructiveSubscales.map(scale => {
-    let totalScore = 0;
+    let subscaleRaw = 0;
     for (let q = scale.range[0]; q <= scale.range[1]; q++) {
-      const ans = formData.get(`q_${q}`);
-      totalScore += getScore(q, ans);
+      subscaleRaw += getScore(q, formData.get(`q_${q}`));
     }
-    const percent = Math.min(100, Math.round((totalScore / scale.maxRaw) * 100));
+    totalDestructiveRaw += subscaleRaw;
+    const percent = Math.min(100, Math.round((subscaleRaw / scale.maxRaw) * 100));
     scoresMap[scale.title] = percent;
-    destructiveSum += percent;
     return {
       id: scale.id,
       title: scale.title,
       percent: percent,
-      colorInfo: getColorInfo(percent, true)
+      color: getColor(percent, true)
     };
   });
 
   // محاسبه بعد یازدهم: تلاش‌های ترمیمی
-  let repairScore = 0;
+  let repairRaw = 0;
   for (let q = repairSubscale.range[0]; q <= repairSubscale.range[1]; q++) {
-    const ans = formData.get(`q_${q}`);
-    repairScore += getScore(q, ans);
+    repairRaw += getScore(q, formData.get(`q_${q}`));
   }
-  const repairPercent = Math.min(100, Math.round((repairScore / repairSubscale.maxRaw) * 100));
+  const repairPercent = Math.min(100, Math.round((repairRaw / repairSubscale.maxRaw) * 100));
   scoresMap[repairSubscale.title] = repairPercent;
   const repairResult = {
     id: 11,
     title: repairSubscale.title,
     percent: repairPercent,
-    colorInfo: getColorInfo(repairPercent, false)
+    color: getColor(repairPercent, false)
   };
 
-  // ستون دوازدهم: وضعیت کلی بدون تلاش‌های ترمیمی
-  const overallWithoutRepair = Math.round(destructiveSum / 10);
-  const withoutRepairColor = getColorInfo(overallWithoutRepair, true);
+  // ستون دوازدهم: وضعیت کلی بدون تلاش‌های ترمیمی (درصد کل آسیب از ۸۴)
+  const overallWithoutRepair = Math.min(100, Math.round((totalDestructiveRaw / 84) * 100));
 
-  // ستون سیزدهم: وضعیت کلی با تلاش‌های ترمیمی
-  const overallWithRepair = Math.max(0, Math.min(100, Math.round(overallWithoutRepair * (1 - (repairPercent / 200)))));
-  const withRepairColor = getColorInfo(overallWithRepair, true);
+  // ستون سیزدهم: وضعیت کلی با تلاش‌های ترمیمی بر اساس فرمول ریاضی خالص (تفریق نمره ترمیمی از آسیب‌ها با کف صفر)
+  const netRaw = Math.max(0, totalDestructiveRaw - repairRaw);
+  const overallWithRepair = Math.min(100, Math.round((netRaw / 84) * 100));
 
-  // فهرست کامل ۱۳ آیتم برای تحلیل و رسم
+  // ۱۳ ستون نهایی
   const all13Results = [
     ...destructiveResults,
     repairResult,
-    { id: 12, title: "وضعیت کلی بدون تلاش‌های ترمیمی", percent: overallWithoutRepair, colorInfo: withoutRepairColor },
-    { id: 13, title: "وضعیت کلی با تلاش‌های ترمیمی", percent: overallWithRepair, colorInfo: withRepairColor }
+    { id: 12, title: "وضعیت کلی بدون تلاش‌های ترمیمی", percent: overallWithoutRepair, color: getColor(overallWithoutRepair, true) },
+    { id: 13, title: "وضعیت کلی با تلاش‌های ترمیمی", percent: overallWithRepair, color: getColor(overallWithRepair, true) }
   ];
 
   // ارسال داده‌ها به شیت
@@ -480,26 +383,25 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     }
   }
 
-  // تغییر صفحه
+  // تغییر نما به صفحه نتیجه
   document.getElementById("survey-view").style.display = "none";
   const resultView = document.getElementById("result-view");
   resultView.style.display = "block";
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // رسم نمودار ستونی با برچسب‌های ۱ تا ۱۳
-  const labels1To13 = all13Results.map(r => r.id.toString());
-  const dataPoints = all13Results.map(r => r.percent);
-  const bgColors = all13Results.map(r => r.colorInfo.color);
+  // رسم نمودار ستونی صرفاً با شماره‌های ۱ تا ۱۳
+  const labels = all13Results.map(r => r.id.toString());
+  const dataValues = all13Results.map(r => r.percent);
+  const barColors = all13Results.map(r => r.color);
 
-  const compCtx = document.getElementById("main_comparison_chart").getContext("2d");
-  new Chart(compCtx, {
+  const ctx = document.getElementById("main_comparison_chart").getContext("2d");
+  new Chart(ctx, {
     type: "bar",
     data: {
-      labels: labels1To13,
+      labels: labels,
       datasets: [{
-        label: "درصد",
-        data: dataPoints,
-        backgroundColor: bgColors,
+        data: dataValues,
+        backgroundColor: barColors,
         borderRadius: 6,
         barPercentage: 0.72
       }]
@@ -511,7 +413,7 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
         legend: { display: false },
         tooltip: {
           callbacks: {
-            title: (items) => `ستون ${items[0].label}`,
+            title: (items) => `مؤلفه شماره ${items[0].label}`,
             label: (context) => `نمره: ${context.raw}٪`
           }
         }
@@ -524,33 +426,11 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
           grid: { color: "#1e293b" }
         },
         x: {
-          ticks: { color: "#f8fafc", font: { size: 13, weight: "bold" } },
+          ticks: { color: "#f8fafc", font: { size: 14, weight: "bold" } },
           grid: { display: false }
         }
       }
     }
-  });
-
-  // نگارش توصیف بالینی ۱ تا ۱.۵ خطی زیر جدول برای تمام ۱۳ مورد
-  const interpWrapper = document.getElementById("interpretations-wrapper");
-  interpWrapper.innerHTML = "";
-
-  all13Results.forEach(item => {
-    const descText = getClinicalInterpretation(item.title, item.percent);
-    const box = document.createElement("div");
-    box.className = "interpretation-item";
-    box.style.borderRightColor = item.colorInfo.color;
-    box.innerHTML = `
-      <div class="item-header">
-        <span class="item-title">مؤلفه شماره ${item.id}: ${item.title}</span>
-        <div>
-          <span style="font-weight: bold; margin-left: 8px; color: #ffffff;">${item.percent}٪</span>
-          <span class="badge" style="background-color: ${item.colorInfo.color};">${item.colorInfo.label}</span>
-        </div>
-      </div>
-      <p class="item-desc">${descText}</p>
-    `;
-    interpWrapper.appendChild(box);
   });
 });
 </script>
