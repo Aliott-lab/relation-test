@@ -6,6 +6,7 @@
   <title>شاخص وضعیت رابطه | کلینیک سپهر آرامش</title>
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <style>
     :root {
       --bg-main: #0b0f19;
@@ -20,7 +21,7 @@
 
     * { box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
     body { background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 24px 12px; line-height: 1.7; }
-    .container { max-width: 900px; margin: 0 auto; background: var(--card-bg); padding: 35px 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--card-border); }
+    .container { max-width: 920px; margin: 0 auto; background: var(--card-bg); padding: 35px 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--card-border); }
 
     .clinic-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 5px; }
     .clinic-brand { color: var(--primary); font-size: 1.2rem; font-weight: 600; letter-spacing: 0.5px; }
@@ -35,6 +36,16 @@
     .form-group label { font-size: 0.85rem; margin-bottom: 6px; color: var(--text-muted); }
     .form-group input, .form-group select { padding: 9px 12px; background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 8px; font-size: 0.95rem; color: #ffffff; outline: none; transition: 0.2s; }
     .form-group input:focus, .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+
+    /* حذف فلش‌های بالا و پایین پیش‌فرض فیلدهای عددی */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
 
     .questions-wrapper { display: flex; flex-direction: column; gap: 12px; }
     .question-row { padding: 14px 16px; border-radius: 10px; background: rgba(15, 23, 42, 0.45); border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 10px; transition: 0.2s; }
@@ -74,7 +85,15 @@
     <form id="quiz-form">
       <div class="profile-grid">
         <div class="form-group"><label>نام و نام خانوادگی:</label><input type="text" id="p_name" required></div>
-        <div class="form-group"><label>سن:</label><input type="number" id="p_age" required></div>
+        <div class="form-group">
+          <label>جنسیت:</label>
+          <select id="p_gender" required>
+            <option value="" disabled selected>انتخاب کنید</option>
+            <option value="مرد">مرد</option>
+            <option value="زن">زن</option>
+          </select>
+        </div>
+        <div class="form-group"><label>سن:</label><input type="tel" inputmode="numeric" pattern="[0-9]*" id="p_age" required></div>
         <div class="form-group"><label>تحصیلات:</label><input type="text" id="p_edu" required></div>
         <div class="form-group"><label>شماره تماس:</label><input type="tel" id="p_phone" required></div>
         <div class="form-group">
@@ -85,7 +104,7 @@
           </select>
         </div>
         <div class="form-group" id="fg_m_year"><label>سال ازدواج:</label><input type="text" id="p_m_year" required></div>
-        <div class="form-group" id="fg_children"><label>تعداد فرزند:</label><input type="number" id="p_children" required></div>
+        <div class="form-group" id="fg_children"><label>تعداد فرزند:</label><input type="tel" inputmode="numeric" id="p_children" required></div>
         <div class="form-group" id="fg_dating" style="display: none;"><label>مدت آشنایی:</label><input type="text" id="p_dating"></div>
       </div>
 
@@ -101,10 +120,10 @@
     </div>
     <h2>گزارش جامع وضعیت رابطه</h2>
 
-    <!-- صرفاً نمودار ستونی با برچسب‌های ۱ تا ۱۳ -->
+    <!-- نمودار ستونی با ستون‌های ۱ تا ۱۴ -->
     <div class="chart-box-card">
-      <h3>پروفایل نمرات و شاخص‌های رابطه (ستون‌های ۱ تا ۱۳)</h3>
-      <div style="position: relative; height: 380px;">
+      <h3>پروفایل نمرات و شاخص‌های رابطه (ستون‌های ۱ تا ۱۴)</h3>
+      <div style="position: relative; height: 400px;">
         <canvas id="main_comparison_chart"></canvas>
       </div>
     </div>
@@ -121,10 +140,11 @@
 </div>
 
 <script>
-// ==============================================================
+// ثبت پلاگین DataLabels برای نوشتن نمرات بالای ستون‌ها
+Chart.register(ChartDataLabels);
+
 // آدرس وب‌اپلیکیشن گوگل‌شیت
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxJskAjHrcMDeHoudvkxNi4eCZ9XiFQ8AQq4zW6BbaFwx80zAc_ieKHYS8ALE-wueyZYA/exec";
-// ==============================================================
 
 const marriedSelect = document.getElementById("p_married");
 const fgMYear = document.getElementById("fg_m_year");
@@ -340,24 +360,29 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     color: getColor(repairPercent, false)
   };
 
-  // ستون دوازدهم: وضعیت کلی بدون تلاش‌های ترمیمی (درصد کل آسیب از ۸۴)
+  // ستون دوازدهم: درصد کل آسیب از ۸۴
   const overallWithoutRepair = Math.min(100, Math.round((totalDestructiveRaw / 84) * 100));
 
-  // ستون سیزدهم: وضعیت کلی با تلاش‌های ترمیمی بر اساس فرمول ریاضی خالص (تفریق نمره ترمیمی از آسیب‌ها با کف صفر)
+  // ستون سیزدهم: تفریق نمره خام با کف صفر
   const netRaw = Math.max(0, totalDestructiveRaw - repairRaw);
   const overallWithRepair = Math.min(100, Math.round((netRaw / 84) * 100));
 
-  // ۱۳ ستون نهایی
-  const all13Results = [
+  // ستون چهاردهم: ستون سیزدهم منهای ۶ درصد (با کف صفر)
+  const col14Score = Math.max(0, overallWithRepair - 6);
+
+  // ۱۴ ستون نهایی
+  const all14Results = [
     ...destructiveResults,
     repairResult,
     { id: 12, title: "وضعیت کلی بدون تلاش‌های ترمیمی", percent: overallWithoutRepair, color: getColor(overallWithoutRepair, true) },
-    { id: 13, title: "وضعیت کلی با تلاش‌های ترمیمی", percent: overallWithRepair, color: getColor(overallWithRepair, true) }
+    { id: 13, title: "وضعیت کلی با تلاش‌های ترمیمی", percent: overallWithRepair, color: getColor(overallWithRepair, true) },
+    { id: 14, title: "وضعیت کلی تعدیل‌شده", percent: col14Score, color: getColor(col14Score, true) }
   ];
 
   // ارسال داده‌ها به شیت
   const payload = {
     name: document.getElementById("p_name").value,
+    gender: document.getElementById("p_gender").value,
     age: document.getElementById("p_age").value,
     edu: document.getElementById("p_edu").value,
     phone: document.getElementById("p_phone").value,
@@ -367,6 +392,7 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     dating: document.getElementById("p_dating").value,
     overallWithoutRepair: overallWithoutRepair,
     overallWithRepair: overallWithRepair,
+    col14Score: col14Score,
     scores: scoresMap
   };
 
@@ -389,10 +415,10 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
   resultView.style.display = "block";
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // رسم نمودار ستونی صرفاً با شماره‌های ۱ تا ۱۳
-  const labels = all13Results.map(r => r.id.toString());
-  const dataValues = all13Results.map(r => r.percent);
-  const barColors = all13Results.map(r => r.color);
+  // رسم نمودار ستونی با برچسب‌های ۱ تا ۱۴ و نمایش عدد دقیق بالای میله‌ها
+  const labels = all14Results.map(r => r.id.toString());
+  const dataValues = all14Results.map(r => r.percent);
+  const barColors = all14Results.map(r => r.color);
 
   const ctx = document.getElementById("main_comparison_chart").getContext("2d");
   new Chart(ctx, {
@@ -409,13 +435,29 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          top: 24
+        }
+      },
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
             title: (items) => `مؤلفه شماره ${items[0].label}`,
-            label: (context) => `نمره: ${context.raw}٪`
+            label: (context) => `درصد دقیق: ${context.raw}٪`
           }
+        },
+        datalabels: {
+          anchor: 'end',
+          align: 'top',
+          color: '#ffffff',
+          offset: 2,
+          font: {
+            weight: 'bold',
+            size: 11
+          },
+          formatter: (value) => value + '٪'
         }
       },
       scales: {
@@ -426,7 +468,7 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
           grid: { color: "#1e293b" }
         },
         x: {
-          ticks: { color: "#f8fafc", font: { size: 14, weight: "bold" } },
+          ticks: { color: "#f8fafc", font: { size: 13, weight: "bold" } },
           grid: { display: false }
         }
       }
