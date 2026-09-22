@@ -22,7 +22,11 @@
     body { background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 24px 12px; line-height: 1.7; }
     .container { max-width: 860px; margin: 0 auto; background: var(--card-bg); padding: 35px 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--card-border); }
 
-    .clinic-brand { text-align: center; color: var(--primary); font-size: 1.15rem; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 5px; }
+    .clinic-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 5px; }
+    .clinic-brand { color: var(--primary); font-size: 1.2rem; font-weight: 600; letter-spacing: 0.5px; }
+    .clinic-logo-header { width: 38px; height: 38px; object-fit: contain; }
+    .clinic-logo-footer { width: 50px; height: 50px; object-fit: contain; margin-top: 15px; }
+
     h1 { text-align: center; color: #ffffff; margin-top: 0; margin-bottom: 25px; font-size: 1.7rem; }
     h2 { text-align: center; color: #ffffff; margin-bottom: 20px; font-size: 1.5rem; }
 
@@ -61,6 +65,10 @@
     .chart-title { color: #f8fafc; font-size: 1.02rem; }
     .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: #000000; }
 
+    .comparison-card { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--card-border); border-radius: 14px; padding: 22px; margin-top: 30px; }
+    .comparison-header { margin-bottom: 15px; }
+    .comparison-header h3 { margin: 0; color: var(--primary); font-size: 1.2rem; }
+
     .clinic-footer { margin-top: 40px; padding: 25px 20px; background: rgba(15, 23, 42, 0.7); border-radius: 12px; border: 1px solid var(--card-border); text-align: center; }
     .clinic-footer h3 { color: var(--primary); margin: 0 0 12px 0; font-size: 1.15rem; }
     .clinic-footer p { margin: 6px 0; color: #cbd5e1; font-size: 0.95rem; }
@@ -71,40 +79,45 @@
 
 <div class="container">
   <div id="survey-view">
-    <div class="clinic-brand">کلینیک سپهر آرامش</div>
+    <div class="clinic-header">
+      <span class="clinic-brand">کلینیک سپهر آرامش</span>
+      <img src="https://cdn.imgurl.ir/uploads/y41139_et_1s.png" alt="لوگو کلینیک" class="clinic-logo-header">
+    </div>
     <h1>شاخص وضعیت رابطه</h1>
     
-    <div class="profile-grid">
-      <div class="form-group"><label>نام و نام خانوادگی:</label><input type="text" id="p_name" required></div>
-      <div class="form-group"><label>سن:</label><input type="number" id="p_age"></div>
-      <div class="form-group"><label>تحصیلات:</label><input type="text" id="p_edu"></div>
-      <div class="form-group"><label>شماره تماس:</label><input type="tel" id="p_phone" required></div>
-      <div class="form-group">
-        <label>وضعیت تأهل:</label>
-        <select id="p_married">
-          <option value="ازدواج کرده‌ام">ازدواج کرده‌ام</option>
-          <option value="ازدواج نکرده‌ام">ازدواج نکرده‌ام</option>
-        </select>
-      </div>
-      <div class="form-group"><label>سال ازدواج:</label><input type="text" id="p_m_year"></div>
-      <div class="form-group"><label>تعداد فرزند:</label><input type="number" id="p_children"></div>
-      <div class="form-group"><label>مدت آشنایی:</label><input type="text" id="p_dating"></div>
-    </div>
-
     <form id="quiz-form">
+      <div class="profile-grid">
+        <div class="form-group"><label>نام و نام خانوادگی:</label><input type="text" id="p_name" required></div>
+        <div class="form-group"><label>سن:</label><input type="number" id="p_age" required></div>
+        <div class="form-group"><label>تحصیلات:</label><input type="text" id="p_edu" required></div>
+        <div class="form-group"><label>شماره تماس:</label><input type="tel" id="p_phone" required></div>
+        <div class="form-group">
+          <label>وضعیت تأهل:</label>
+          <select id="p_married" required>
+            <option value="ازدواج کرده‌ام">ازدواج کرده‌ام</option>
+            <option value="ازدواج نکرده‌ام">ازدواج نکرده‌ام</option>
+          </select>
+        </div>
+        <div class="form-group" id="fg_m_year"><label>سال ازدواج:</label><input type="text" id="p_m_year" required></div>
+        <div class="form-group" id="fg_children"><label>تعداد فرزند:</label><input type="number" id="p_children" required></div>
+        <div class="form-group" id="fg_dating" style="display: none;"><label>مدت آشنایی:</label><input type="text" id="p_dating"></div>
+      </div>
+
       <div class="questions-wrapper" id="questions-container"></div>
       <button type="submit" id="submit-btn" class="submit-btn">ثبت پاسخ‌ها و محاسبه نتیجه</button>
     </form>
   </div>
 
   <div id="result-view">
-    <div class="clinic-brand">کلینیک سپهر آرامش</div>
+    <div class="clinic-header">
+      <span class="clinic-brand">کلینیک سپهر آرامش</span>
+      <img src="https://cdn.imgurl.ir/uploads/y41139_et_1s.png" alt="لوگو کلینیک" class="clinic-logo-header">
+    </div>
     <h2>گزارش جامع وضعیت رابطه</h2>
 
-    <!-- کارت شاخص کلی با تعدیل ضربه‌گیر آشتی‌جویی -->
     <div class="overall-card">
       <div class="overall-header">
-        <h3>شاخص کلی تعارض و آسیب رابطه (با اثر ضربه‌گیر آشتی‌جویی)</h3>
+        <h3>وضعیت کلی رابطه (با اثر ضربه گیر آشتی جویی)</h3>
         <div class="overall-score-box">
           <span class="overall-score" id="overall-percent-text"></span>
           <span class="badge" id="overall-badge"></span>
@@ -119,19 +132,62 @@
     <h3 style="color: #e2e8f0; margin-top: 30px; font-size: 1.15rem;">تفکیک ابعاد یازده‌گانه رابطه</h3>
     <div class="charts-grid" id="charts-wrapper"></div>
 
+    <div class="comparison-card">
+      <div class="comparison-header">
+        <h3>نمودار مقایسه‌ای ابعاد یازده‌گانه رابطه</h3>
+        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">مقایسه درصد نمرات تمام مؤلفه‌ها در یک نما (بعد پنجم: آشتی‌جویی)</p>
+      </div>
+      <div style="position: relative; height: 320px;">
+        <canvas id="comparison_chart"></canvas>
+      </div>
+    </div>
+
     <div class="clinic-footer">
       <h3>ارتباط با کلینیک سپهر آرامش</h3>
       <p><strong>آدرس:</strong> نبش احمد آباد ۷ - ساختمان گوهرشاد - طبقه سوم - واحد ۳۰۹</p>
       <p><strong>تلفن تماس و مشاوره:</strong> <a href="tel:09150703239" dir="ltr">0915 070 3239</a></p>
+      <div>
+        <img src="https://cdn.imgurl.ir/uploads/y41139_et_1s.png" alt="لوگو کلینیک" class="clinic-logo-footer">
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-// ==========================================
-// آدرس وب‌اپلیکیشن گوگل‌شیت را اینجا قرار دهید:
+// ==============================================================
+// آدرس وب‌اپلیکیشن گوگل‌شیت
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxJskAjHrcMDeHoudvkxNi4eCZ9XiFQ8AQq4zW6BbaFwx80zAc_ieKHYS8ALE-wueyZYA/exec";
-// ==========================================
+// ==============================================================
+
+// کنترل نمایش و الزام فیلدهای وضعیت تاهل
+const marriedSelect = document.getElementById("p_married");
+const fgMYear = document.getElementById("fg_m_year");
+const fgChildren = document.getElementById("fg_children");
+const fgDating = document.getElementById("fg_dating");
+const inputMYear = document.getElementById("p_m_year");
+const inputChildren = document.getElementById("p_children");
+const inputDating = document.getElementById("p_dating");
+
+marriedSelect.addEventListener("change", function() {
+  if (this.value === "ازدواج کرده‌ام") {
+    fgMYear.style.display = "flex";
+    fgChildren.style.display = "flex";
+    fgDating.style.display = "none";
+    inputMYear.required = true;
+    inputChildren.required = true;
+    inputDating.required = false;
+    inputDating.value = "";
+  } else {
+    fgMYear.style.display = "none";
+    fgChildren.style.display = "none";
+    fgDating.style.display = "flex";
+    inputMYear.required = false;
+    inputChildren.required = false;
+    inputDating.required = true;
+    inputMYear.value = "";
+    inputChildren.value = "";
+  }
+});
 
 const subscales = [
   { id: 1, title: "۱. عیب‌جویی", range: [1, 7], maxRaw: 10.5, isDestructive: true },
@@ -229,6 +285,7 @@ const questions = [
 
 const container = document.getElementById("questions-container");
 
+// ترتیب گزینه‌ها: فقط من - فقط همسرم - هر دو - هیچ‌کدام
 questions.forEach((qText, index) => {
   const qNum = index + 1;
   const qDiv = document.createElement("div");
@@ -236,10 +293,10 @@ questions.forEach((qText, index) => {
   qDiv.innerHTML = `
     <div class="question-title"><strong>${qNum}.</strong> ${qText}</div>
     <div class="options">
-      <label><input type="radio" name="q_${qNum}" value="none" required> هیچ‌کدام</label>
-      <label><input type="radio" name="q_${qNum}" value="me"> فقط من</label>
+      <label><input type="radio" name="q_${qNum}" value="me" required> فقط من</label>
       <label><input type="radio" name="q_${qNum}" value="spouse"> فقط همسرم</label>
       <label><input type="radio" name="q_${qNum}" value="both"> هر دو</label>
+      <label><input type="radio" name="q_${qNum}" value="none"> هیچ‌کدام</label>
     </div>
   `;
   container.appendChild(qDiv);
@@ -258,11 +315,18 @@ function getScore(qIndex, answer) {
   }
 }
 
-function getColorInfo(percentage) {
-  if (percentage <= 25) return { color: "#22c55e", label: "سالم و مطلوب" };
-  if (percentage <= 50) return { color: "#facc15", label: "متوسط" };
-  if (percentage <= 75) return { color: "#fb923c", label: "شدید" };
-  return { color: "#f87171", label: "هشدار / بحرانی" };
+function getColorInfo(percentage, isDestructive = true) {
+  if (isDestructive) {
+    if (percentage <= 25) return { color: "#22c55e", label: "سالم و مطلوب" };
+    if (percentage <= 50) return { color: "#facc15", label: "متوسط" };
+    if (percentage <= 75) return { color: "#fb923c", label: "شدید" };
+    return { color: "#f87171", label: "هشدار / بحرانی" };
+  } else {
+    if (percentage >= 76) return { color: "#22c55e", label: "بسیار مطلوب و عالی" };
+    if (percentage >= 51) return { color: "#facc15", label: "متوسط و قابل قبول" };
+    if (percentage >= 26) return { color: "#fb923c", label: "ضعیف" };
+    return { color: "#f87171", label: "هشدار / بسیار ضعیف" };
+  }
 }
 
 document.getElementById("quiz-form").addEventListener("submit", async function(e) {
@@ -295,16 +359,14 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     return {
       title: scale.title,
       percent: percent,
-      colorInfo: getColorInfo(percent)
+      colorInfo: getColorInfo(percent, scale.isDestructive)
     };
   });
 
-  // محاسبه روش ۲: D * (1 - R / 200)
   const avgDestructive = destructiveSum / 10;
   const finalDamageScore = Math.max(0, Math.min(100, Math.round(avgDestructive * (1 - (reconciliationPercent / 200)))));
-  const finalColor = getColorInfo(finalDamageScore);
+  const finalColor = getColorInfo(finalDamageScore, true);
 
-  // پیام تفسیری پویا
   let interpretationText = "";
   if (finalDamageScore <= 25) {
     interpretationText = "پیام بالینی: رابطه در محدوده سالم و ایمن قرار دارد. اثر ضربه‌گیر تلاش‌های آشتی‌جویانه به خوبی تنش‌های روزمره را خنثی کرده و ثبات عاطفی برقرار است.";
@@ -316,7 +378,6 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     interpretationText = "پیام بالینی (هشدار): رابطه در وضعیت بحرانی و فرسودگی شدید قرار گرفته است. مکانیزم‌های دفاعی حاکم بوده و اقدامات ترمیمی ناکام مانده‌اند؛ مداخله فوری تخصصی الزامی است.";
   }
 
-  // آماده‌سازی داده برای ارسال به گوگل شیت
   const payload = {
     name: document.getElementById("p_name").value,
     age: document.getElementById("p_age").value,
@@ -330,7 +391,6 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     scores: scoresMap
   };
 
-  // ارسال داده به شیت (در پس‌زمینه بدون ایجاد مانع)
   if (GOOGLE_SHEET_URL && !GOOGLE_SHEET_URL.includes("YOUR_GOOGLE")) {
     try {
       fetch(GOOGLE_SHEET_URL, {
@@ -344,13 +404,12 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     }
   }
 
-  // نمایش نتایج
   document.getElementById("survey-view").style.display = "none";
   const resultView = document.getElementById("result-view");
   resultView.style.display = "block";
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // نمودار کل شاخص آسیب
+  // نمودار کلی
   document.getElementById("overall-percent-text").innerText = finalDamageScore + "٪";
   const overallBadge = document.getElementById("overall-badge");
   overallBadge.innerText = finalColor.label;
@@ -361,7 +420,7 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
   new Chart(overallCtx, {
     type: "bar",
     data: {
-      labels: ["شاخص آسیب کلی"],
+      labels: ["وضعیت کلی"],
       datasets: [{
         data: [finalDamageScore],
         backgroundColor: finalColor.color,
@@ -381,7 +440,7 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     }
   });
 
-  // رسم ۱۱ نمودار دیگر
+  // رسم ۱۱ نمودار تک‌به‌تک
   const chartsWrapper = document.getElementById("charts-wrapper");
   chartsWrapper.innerHTML = "";
 
@@ -432,6 +491,50 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
         }
       }
     });
+  });
+
+  // رسم نمودار مقایسه‌ای عمودی (همه مؤلفه‌ها کنار هم)
+  const comparisonLabels = results.map(r => r.title.replace(/^\d+\.\s*/, ''));
+  const comparisonData = results.map(r => r.percent);
+  const comparisonColors = results.map(r => r.colorInfo.color);
+
+  const compCtx = document.getElementById("comparison_chart").getContext("2d");
+  new Chart(compCtx, {
+    type: "bar",
+    data: {
+      labels: comparisonLabels,
+      datasets: [{
+        label: "درصد نمره",
+        data: comparisonData,
+        backgroundColor: comparisonColors,
+        borderRadius: 6,
+        barPercentage: 0.7
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (context) => `میزان: ${context.raw}٪`
+          }
+        }
+      },
+      scales: {
+        y: {
+          min: 0,
+          max: 100,
+          ticks: { color: "#94a3b8", stepSize: 25, callback: (v) => v + "%" },
+          grid: { color: "#1e293b" }
+        },
+        x: {
+          ticks: { color: "#e2e8f0", font: { size: 10.5 } },
+          grid: { display: false }
+        }
+      }
+    }
   });
 });
 </script>
