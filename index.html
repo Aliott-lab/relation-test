@@ -37,7 +37,6 @@
     .form-group input, .form-group select { padding: 9px 12px; background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 8px; font-size: 0.95rem; color: #ffffff; outline: none; transition: 0.2s; }
     .form-group input:focus, .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
 
-    /* حذف فلش‌های بالا و پایین پیش‌فرض فیلدهای عددی */
     input[type=number]::-webkit-inner-spin-button, 
     input[type=number]::-webkit-outer-spin-button { 
       -webkit-appearance: none; 
@@ -120,10 +119,9 @@
     </div>
     <h2>گزارش جامع وضعیت رابطه</h2>
 
-    <!-- نمودار ستونی با ستون‌های ۱ تا ۱۴ -->
     <div class="chart-box-card">
-      <h3>پروفایل نمرات و شاخص‌های رابطه (ستون‌های ۱ تا ۱۴)</h3>
-      <div style="position: relative; height: 400px;">
+      <h3>پروفایل نمرات و شاخص‌های رابطه</h3>
+      <div style="position: relative; height: 520px;">
         <canvas id="main_comparison_chart"></canvas>
       </div>
     </div>
@@ -140,10 +138,8 @@
 </div>
 
 <script>
-// ثبت پلاگین DataLabels برای نوشتن نمرات بالای ستون‌ها
 Chart.register(ChartDataLabels);
 
-// آدرس وب‌اپلیکیشن گوگل‌شیت
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxJskAjHrcMDeHoudvkxNi4eCZ9XiFQ8AQq4zW6BbaFwx80zAc_ieKHYS8ALE-wueyZYA/exec";
 
 const marriedSelect = document.getElementById("p_married");
@@ -175,106 +171,117 @@ marriedSelect.addEventListener("change", function() {
   }
 });
 
-// ۱۰ بعد آسیب‌زا (ستون‌های ۱ تا ۱۰)
-const destructiveSubscales = [
-  { id: 1, title: "عیب‌جویی", range: [1, 7], maxRaw: 8.4 },
-  { id: 2, title: "خوار کردن", range: [8, 14], maxRaw: 8.4 },
-  { id: 3, title: "مقابله", range: [15, 21], maxRaw: 8.4 },
-  { id: 4, title: "دوری", range: [22, 28], maxRaw: 8.4 },
-  { id: 5, title: "آغاز طوفانی", range: [36, 42], maxRaw: 8.4 },
-  { id: 6, title: "فوران هیجان", range: [43, 49], maxRaw: 8.4 },
-  { id: 7, title: "سردی", range: [50, 56], maxRaw: 8.4 },
-  { id: 8, title: "بی‌اعتمادی", range: [57, 63], maxRaw: 8.4 },
-  { id: 9, title: "نارضایی جنسی", range: [64, 70], maxRaw: 8.4 },
-  { id: 10, title: "ناتوانی در حل تعارض", range: [71, 77], maxRaw: 8.4 }
+const subscales = [
+  { id: 1, title: "عیب جویی", range: [1, 5], maxRaw: 6.0 },
+  { id: 2, title: "خوار کردن", range: [6, 10], maxRaw: 6.0 },
+  { id: 3, title: "مقابله", range: [11, 15], maxRaw: 6.0 },
+  { id: 4, title: "دوری", range: [16, 20], maxRaw: 6.0 },
+  { id: 5, title: "شکست تلاشهای ترمیمی", range: [21, 25], maxRaw: 6.0 },
+  { id: 6, title: "آغاز طوفانی", range: [26, 30], maxRaw: 6.0 },
+  { id: 7, title: "فوران هیجان", range: [31, 35], maxRaw: 6.0 },
+  { id: 8, title: "سردی", range: [36, 40], maxRaw: 6.0 },
+  { id: 9, title: "بی اعتمادی", range: [41, 45], maxRaw: 6.0 },
+  { id: 10, title: "نارضایی جنسی", range: [46, 50], maxRaw: 6.0 },
+  { id: 11, title: "ناتوانی حل مساله", range: [51, 55], maxRaw: 6.0 }
 ];
 
-// بعد تلاش‌های ترمیمی (ستون ۱۱)
-const repairSubscale = { id: 11, title: "تلاش‌های ترمیمی", range: [29, 35], maxRaw: 10.5 };
-
-const questions = [
+const mainQuestions = [
   "در هنگام اختلاف، به جای شکایت از رفتار خاص، به شخصیت طرف مقابل حمله می‌کنیم.",
   "در مشاجرات، از کلماتی مانند «همیشه» یا «هرگز» برای توصیف رفتار طرف مقابل استفاده می‌کنیم.",
-  "در زمان عصبانیت، به جای قضاوت در مورد رفتار، به دنبال قضاوت در باره شخصیت هستیم.",
+  "در زمان عصبانیت، بیشتر بر این تمرکز می‌کنیم که طرف مقابل چه نوع آدمی است تا اینکه چه کاری انجام داده.",
   "در دعواها، به جای بیان نیاز خود، طرف مقابل را به خاطر یک نقص شخصیتی سرزنش می‌کنیم.",
-  "بسیاری از مشکلات را به تنبلی یا بی‌فکری طرف مقابل نسبت می‌دهیم.",
   "در حین مشاجره، به جای گلایه از یک رفتار، به طرف مقابل برچسب شخصیتی می زنیم.",
-  "در مشاجرات، احساس می ‌کنیم مورد قضاوت یا حمله به شخصیت خود قرار می ‌گیریم.",
   "در حین مشاجره، طرف مقابل را مسخره یا تحقیر می‌کنیم.",
   "در گفتگوها، از لحن طعنه ‌آمیز یا پرخاشگرانه استفاده می‌کنیم.",
   "در رابطه، احساس برتری نسبت به طرف مقابل داریم.",
-  "در دعواها، حرکات بدنی تحقیرآمیز  انجام می دهیم مثل چشم ‌غره  یا ادا درآوردن.",
-  "به طرف مقابل برچسب ‌هایی مثل «احمق» یا «تنبل» می‌زنیم.",
-  "دستاوردها، تلاش‌ها یا نظرات طرف مقابل را بی ‌ارزش جلوه می‌دهیم.",
+  "در دعواها، حرکات بدنی تحقیرآمیز انجام می دهیم مثل چشم ‌غره یا ادا درآوردن.",
   "از لحن یا کلمات طرف مقابل احساس حقارت می‌کنیم.",
   "وقتی گلایه ای می‌شود، بلافاصله دلیل می‌آوریم که تقصیر من نبوده.",
   "در مشاجرات، طرف مقابل را به ‌عنوان مقصر اصلی معرفی می‌کنیم.",
   "برایمان سخت است که یک اشتباه را بدون بهانه ‌آوردن بپذیریم.",
   "در مشاجرات، بیشتر به فکر دفاع از خودمان هستیم تا درک حرف طرف مقابل.",
-  "اگر اشتباهی را بپذیریم بلافاصله توجیهش می کنیم(مثال: «من» سرت داد زدم «اما» تقصیر خودت بود..)",
   "حتی وقتی اشتباه برایمان آشکار است، شرایط را توجیه می‌کنیم.",
-  "در زمان بحث، تقصیر و اشتباهمان  را قبول نمی‌کنیم.",
-  "در وسط مشاجره، ناگهان سکوت می شود و دیگر پاسخی نمی‌دهیم.",
-  "وقتی بحث داغ می‌شود، محل را ترک یا خود را مشغول کاری می‌کنیم.",
-  "ترجیح می‌دهیم سکوت کنیم تا اینکه وارد درگیری شویم.",
-  "در حین بحث، سکوت می‌کنیم  و واکنشی نشان نمی‌دهیم.",
+  "به جای گفتگوی سالم در خصوص اختلافات اجتناب میکنیم.",
+  "در حین بحث، اجتناب می‌کنیم و واکنشی نشان نمی‌دهیم (قهر یا سکوت یا فاصله گرفتن).",
   "معمولاً بعد از مشاجره، حتی تماس چشمی را قطع می‌کنیم.",
   "وقتی طرف مقابل ناراحت است، ترجیح می‌دهیم به کار خود مشغول شده تا واکنش نشان دهیم.",
   "اغلب اوقات پس از مشاجرات، ارتباط را قطع کرده و از یکدیگر فاصله می گیریم.",
-  "در هنگام مشاجره، هر یک از ما به راحتی می‌تواند اشتباه خود را پذیرفته و عذرخواهی کند.",
-  "معمولا وقتی یک نفر عذرخواهی می کند طرف مقابل آن را می پذیرد.",
-  "هر یک از ما می‌تواند شوخ‌طبعی را حتی هنگام جر و بحث حفظ کند تا تنش کاهش یابد.",
-  "وقتی یکی از ما به دیگری می‌گوید که نحوه ارتباطش اشکال دارد، طرف مقابل معمولاً آن را می‌پذیرد و گوش می‌کند.",
-  "تلاش‌های هر یک از ما برای اصلاح گفت‌وگوهای منفی معمولاً مؤثر است و اوضاع را بهتر می‌کند.",
-  "در هنگام اختلاف نظر معمولاً می‌توانیم به تفاهم برسیم.",
-  "حتی موقع جر و بحث، می‌توانیم مهربان بوده و از کارهای خوب طرف مقابل قدردانی کنیم.",
+  "در مشاجرات، اگر یکی عذرخواهی کند، عذرخواهی او را نمی پذیریم.",
+  "در هنگام مشاجرات تلاش هایمان برای کاهش تنش معمولا شکست می خورد.",
+  "تلاش‌های هر یک از ما برای اصلاح گفت‌وگوهای منفی معمولاً مؤثر نبوده و اوضاع را بهتر نمی‌کند.",
+  "در صورتی که برای تفاهم تلاش کنیم معمولا به نتیجه ای نمی رسد.",
+  "تلاش هایمان در مشاجرات برای تمرکز روی نکات مثبت معمولا بی فایده است.",
   "در ابتدای بحث، به جای اشاره به موضوع خاص، از جملات کلی و مبهم استفاده می‌کنیم (مثلاً «تو همیشه خراب می‌کنی»)؟",
   "در ابتدای بحث، به جای اشاره به یک رفتار خاص، به شخصیت طرف مقابل حمله می‌کنیم (مثلاً «تو آدم بی‌مسئولیتی هستی»)؟",
   "شروع گفتگو با لحن بلند یا تند (آزاردهنده) همراه است.",
   "در شروع بحث، از عبارات اتهامی مانند «تو مقصری» یا «این تقصیر توست» استفاده می کنیم؟",
-  "بیان ناراحتی با حالت تدافعی یا پرخاشگرانه همراه است؟",
-  "در شروع بحث، طرف مقابل را نادیده گرفته شده یا بی‌ارزش جلوه داده می شود (مثلاً «به حرفت گوش نمی‌دم چون منطقی نیستی»)؟",
-  "شروع گفتگو با اتهام و تهمت به  طرف مقابل همراه است (مثلاً «این کار رو عمداً انجام دادی» یا «به عمد داری اذیتم می‌کنی».",
+  "شروع گفتگو با اتهام و تهمت به طرف مقابل همراه است (مثلاً «این کار رو عمداً انجام دادی» یا «به عمد داری اذیتم می‌کنی».",
   "گفت‌وگوهایمان خیلی زود بالا می‌گیرد.",
   "آرام شدن در حین دعوا برایمان سخت است.",
-  "در حین دعوا حرفی می‌زنیم که بعداً پشیمانی می‌آورد.",
   "در بحث ها معمولا داد می‌زنیم.",
   "وقتی خشم بالا میزند کنترلی روی گفتار و رفتارمان نداریم.",
   "موقع دعوا آنقدر هیجاناتمان فوران می کند که دوست داریم فرار کنیم.",
-  "در هنگام دعوا نمیتوانیم به سادگی آرام شویم.",
   "در این ازدواج، احساس تنهایی می کنیم.",
-  "اغلب اوقات در این رابطه احساس دلسردی می‌کنیم.",
-  "در رابطه  احساس صمیمیت نمی‌کنیم.",
   "امید چندانی به بهتر شدن رابطه مان نداریم.",
   "ارتباط عاطفی هیجانی نداریم و از هم دوریم.",
   "حرف عاشقانه ای بین ما رد و بدل نمی شود.",
   "نسبت به همسرم بی تفاوت شده ام.",
   "در رابطه مان احساس ناامنی و عدم اطمینان داریم.",
-  "نمی‌توانیم به راحتی، مسائل، و جزئیات زندگی را با یکدیگر در میان بگذاریم و از این کار اجتناب می‌کنیم.",
-  "به وعده‌ها، قول‌ها و تعهداتی که به یکدیگر می‌دهیم، پایبند نیستیم.",
   "در غیاب یکدیگر، نسبت به وفاداری و رفتار همسرمان نگرانی، شک و تردید داریم.",
   "در خصوص روابطمان با جنس مخالف نگرانیم.",
   "یکی از تنشهای مهم به دلیل حساسیتمان نسبت به خودمانی شدن با جنس مخالف است.",
   "نسبت به آینده این رابطه و ادامه زندگی مشترک، ناامید و مردد هستیم.",
   "از صحبت کردن درباره نیازها، خواسته‌ها و علایق جنسی خود با یکدیگر اجتناب می‌کنیم.",
   "از کیفیت یا تنوع رابطه جنسی مان احساس نارضایتی و ناکامی داریم.",
-  "پیشنهاد یا تمایل جنسی یکی از ما، از طرف مقابل با بی‌اعتنایی، تمسخر یا تندی رد می‌شود.",
   "از تعداد دفعات رابطه جنسی مان ناراضی هستیم.",
   "صمیمیت فیزیکی (مانند بغل کردن، بوسیدن و نوازش بدون رابطه جنسی) بین ما به شدت کاهش یافته یا قطع شده است.",
-  "وقتی در رابطه جنسی مشکلی پیش می‌آید، درباره آن صحبت نمی کنیم.",
   "در برقراری رابطه جنسی، مشکل داریم.",
   "در هنگام بروز مشکل یا اختلاف، به جای یافتن راه‌حل مشترک، تقصیر را گردن هم می‌اندازیم.",
   "تلاشهایمان برای حل اختلافات معمولا به نتیجه نمی رسد.",
   "در مشکلات به جای حل اختلاف، دچار تنش و بحث بیشتر می شویم.",
   "در بحث‌ها، فقط به نیازهای خود توجه می‌کنیم و به دغدغه‌ها و نیازهای طرف مقابل بی‌توجه هستیم.",
-  "برای حل مشکلات و جلوگیری از تکرار آن، با هم صحبت نمی‌کنیم و مشکل را مسکوت می‌گذاریم.",
-  "اگر در حل یک مسئله به بن‌بست برسیم، از کمک گرفتن از مشاور یا فرد سوم آگاه و بی‌طرف امتناع می‌کنیم.",
   "راه حل هایی که برای حل مسائل پیشنهاد میدهیم معمولا مورد پسند طرف مقابل نیست."
+];
+
+const normQuestions = [
+  "به من حمله شده یا از من انتقاد شده است.",
+  "اغلب احساس میکنم به شخصیتم حمله شده است.",
+  "گاهی در مشاجره ها احساس نمی کنم حتی همسرم من را دوست داشته باشد.",
+  "باید از خودم دفاع کنم چون اتهامهایی که به من میزند ناعادلانه است.",
+  "اغلب احساس میکنم همسرم قدرنشناس است.",
+  "اغلب احساسات و قصد من درست درک نمی شوند.",
+  "احساس می کنم از کارهای خوبی که برای این زندکی مشترک کرده ام قدرشناسی نمی شود.",
+  "اغلب فقط دلم میخواهد زودتر صحنۀ مشاجره را ترک کنم.",
+  "از این همه منفی نگری بینمان حالم به هم میخورد.",
+  "گاهی حس میکنم همسرم به من توهین میکند.",
+  "گاهی فقط ساکت میشوم و دیگر حرفی نمی زنم.",
+  "میتوانم حین مشاجره بدجنس شوم و تحقیر و توهین کنم.",
+  "احساس بی احترامی می کنم.",
+  "بسیاری از مسائل ما تقصير من نيست.",
+  "نحوۀ صحبت کردنمان باعث میشود فاتحۀ این رابطۀ زناشویی را بخوانم.",
+  "با خودم فکر میکنم «این همه تعارض أخرش چه می شود».",
+  "همسرم واقعا عوض نمیشود.",
+  "گهگاه مشکلاتمان من را ناامید می کنند.",
+  "همسرم با مسئولیت پذیری و بالغانه با مسائل روبرو نمی شود.",
+  "سعی میکنم به ضعفهای شخصیت همسرم، که نیاز به اصلاح دارند، اشاره کنم.",
+  "گاهی به خاطر مسائلمان منفجر میشوم و کنترلم را از دست میدهم.",
+  "همسرم برای شکایت از من از عبارت هایی جون «تو همیشه» یا «تو هرکز» استفاده می کند.",
+  "اغلب به خاطر مشکلاتی که مربوط به هر دویمان هستند، من مقصر شناخته می شوم.",
+  "برای موضع همسرم دربارۀ مشکلات اساسی مان احترام چندانی قائل نیستم.",
+  "همسرم گاهی خودخواه و خودمحور میشود.",
+  "گاهی از برخی رفتارهای همسرم احساس انزجار میکنم.",
+  "همسرم زیادی احساساتی میشود.",
+  "من واقعاً مقصر خیلی از چیزهایی که کاسه و کوزهاش بر سرم میشکند نیستم.",
+  "اغلب مسائل کوچک ناگهان به دعوایی تمام عیار تبدیل میشوند.",
+  "مشاجره هایمان از هیچ و پوچ آغاز میشوند.",
+  "احساسات همسرم خیلی زود جریحه دار می شود.",
+  "اغلب برای اینکه اوضاع را کمی آرام کنم ساکت می شوم.",
+  "همسرم نمی تواند منطقی و عقلانی باشد."
 ];
 
 const container = document.getElementById("questions-container");
 
-questions.forEach((qText, index) => {
+mainQuestions.forEach((qText, index) => {
   const qNum = index + 1;
   const qDiv = document.createElement("div");
   qDiv.className = "question-row";
@@ -290,32 +297,31 @@ questions.forEach((qText, index) => {
   container.appendChild(qDiv);
 });
 
-// ضرایب نمره‌گذاری
-function getScore(qIndex, answer) {
-  const isRepair = (qIndex >= 29 && qIndex <= 35);
-  if (isRepair) {
-    if (answer === "both") return 1.5;
-    if (answer === "me" || answer === "spouse") return 1.2;
-    return 0.0;
-  } else {
-    if (answer === "both") return 1.2;
-    if (answer === "me" || answer === "spouse") return 1.0;
-    return 0.0;
-  }
+normQuestions.forEach((qText, index) => {
+  const qNum = index + 56;
+  const qDiv = document.createElement("div");
+  qDiv.className = "question-row";
+  qDiv.innerHTML = `
+    <div class="question-title"><strong>${qNum}.</strong> ${qText}</div>
+    <div class="options">
+      <label><input type="radio" name="q_${qNum}" value="yes" required> بله</label>
+      <label><input type="radio" name="q_${qNum}" value="no"> خیر</label>
+    </div>
+  `;
+  container.appendChild(qDiv);
+});
+
+function getScore(answer) {
+  if (answer === "both") return 1.2;
+  if (answer === "me" || answer === "spouse") return 1.0;
+  return 0.0;
 }
 
-function getColor(percentage, isDestructive = true) {
-  if (isDestructive) {
-    if (percentage <= 25) return "#22c55e";
-    if (percentage <= 50) return "#facc15";
-    if (percentage <= 75) return "#fb923c";
-    return "#f87171";
-  } else {
-    if (percentage >= 76) return "#22c55e";
-    if (percentage >= 51) return "#facc15";
-    if (percentage >= 26) return "#fb923c";
-    return "#f87171";
-  }
+function getColor(percentage) {
+  if (percentage <= 25) return "#22c55e";
+  if (percentage <= 50) return "#facc15";
+  if (percentage <= 75) return "#fb923c";
+  return "#f87171";
 }
 
 document.getElementById("quiz-form").addEventListener("submit", async function(e) {
@@ -326,60 +332,39 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
   submitBtn.innerText = "در حال پردازش داده‌ها...";
 
   const formData = new FormData(e.target);
-  let totalDestructiveRaw = 0;
+  let totalRawScore = 0;
   let scoresMap = {};
 
-  // محاسبه ۱۰ بعد آسیب‌زا
-  const destructiveResults = destructiveSubscales.map(scale => {
-    let subscaleRaw = 0;
+  const dimensionResults = subscales.map(scale => {
+    let subRaw = 0;
     for (let q = scale.range[0]; q <= scale.range[1]; q++) {
-      subscaleRaw += getScore(q, formData.get(`q_${q}`));
+      subRaw += getScore(formData.get(`q_${q}`));
     }
-    totalDestructiveRaw += subscaleRaw;
-    const percent = Math.min(100, Math.round((subscaleRaw / scale.maxRaw) * 100));
+    totalRawScore += subRaw;
+    const percent = Math.min(100, Math.round((subRaw / scale.maxRaw) * 100));
     scoresMap[scale.title] = percent;
     return {
       id: scale.id,
       title: scale.title,
       percent: percent,
-      color: getColor(percent, true)
+      color: getColor(percent)
     };
   });
 
-  // محاسبه بعد یازدهم: تلاش‌های ترمیمی
-  let repairRaw = 0;
-  for (let q = repairSubscale.range[0]; q <= repairSubscale.range[1]; q++) {
-    repairRaw += getScore(q, formData.get(`q_${q}`));
-  }
-  const repairPercent = Math.min(100, Math.round((repairRaw / repairSubscale.maxRaw) * 100));
-  scoresMap[repairSubscale.title] = repairPercent;
-  const repairResult = {
-    id: 11,
-    title: repairSubscale.title,
-    percent: repairPercent,
-    color: getColor(repairPercent, false)
-  };
+  const overallPercent = Math.min(100, Math.round((totalRawScore / 66.0) * 100));
 
-  // ستون دوازدهم: درصد کل آسیب از ۸۴
-  const overallWithoutRepair = Math.min(100, Math.round((totalDestructiveRaw / 84) * 100));
-
-  // ستون سیزدهم: تفریق نمره خام با کف صفر
-  const netRaw = Math.max(0, totalDestructiveRaw - repairRaw);
-  const overallWithRepair = Math.min(100, Math.round((netRaw / 84) * 100));
-
-  // ستون چهاردهم: ستون سیزدهم منهای ۶ درصد (با کف صفر)
-  const col14Score = Math.max(0, overallWithRepair - 6);
-
-  // ۱۴ ستون نهایی
-  const all14Results = [
-    ...destructiveResults,
-    repairResult,
-    { id: 12, title: "وضعیت کلی بدون تلاش‌های ترمیمی", percent: overallWithoutRepair, color: getColor(overallWithoutRepair, true) },
-    { id: 13, title: "وضعیت کلی با تلاش‌های ترمیمی", percent: overallWithRepair, color: getColor(overallWithRepair, true) },
-    { id: 14, title: "وضعیت کلی تعدیل‌شده", percent: col14Score, color: getColor(col14Score, true) }
+  const all12Results = [
+    ...dimensionResults,
+    { id: 12, title: "وضعیت کلی رابطه", percent: overallPercent, color: getColor(overallPercent) }
   ];
 
-  // ارسال داده‌ها به شیت
+  let normScore = 0;
+  for (let q = 56; q <= 88; q++) {
+    if (formData.get(`q_${q}`) === "yes") {
+      normScore += 1;
+    }
+  }
+
   const payload = {
     name: document.getElementById("p_name").value,
     gender: document.getElementById("p_gender").value,
@@ -390,9 +375,8 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     m_year: document.getElementById("p_m_year").value,
     children: document.getElementById("p_children").value,
     dating: document.getElementById("p_dating").value,
-    overallWithoutRepair: overallWithoutRepair,
-    overallWithRepair: overallWithRepair,
-    col14Score: col14Score,
+    overallPercent: overallPercent,
+    gottmanNormScore: normScore,
     scores: scoresMap
   };
 
@@ -409,16 +393,14 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     }
   }
 
-  // تغییر نما به صفحه نتیجه
   document.getElementById("survey-view").style.display = "none";
   const resultView = document.getElementById("result-view");
   resultView.style.display = "block";
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // رسم نمودار ستونی با برچسب‌های ۱ تا ۱۴ و نمایش عدد دقیق بالای میله‌ها
-  const labels = all14Results.map(r => r.id.toString());
-  const dataValues = all14Results.map(r => r.percent);
-  const barColors = all14Results.map(r => r.color);
+  const labels = all12Results.map(r => r.id.toString());
+  const dataValues = all12Results.map(r => r.percent);
+  const barColors = all12Results.map(r => r.color);
 
   const ctx = document.getElementById("main_comparison_chart").getContext("2d");
   new Chart(ctx, {
@@ -433,26 +415,27 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
       }]
     },
     options: {
+      indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
       layout: {
         padding: {
-          top: 24
+          left: 35
         }
       },
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            title: (items) => `مؤلفه شماره ${items[0].label}`,
+            title: (items) => `شاخص شماره ${items[0].label}`,
             label: (context) => `درصد دقیق: ${context.raw}٪`
           }
         },
         datalabels: {
           anchor: 'end',
-          align: 'top',
+          align: 'left',
           color: '#ffffff',
-          offset: 2,
+          offset: 4,
           font: {
             weight: 'bold',
             size: 11
@@ -461,13 +444,13 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
         }
       },
       scales: {
-        y: {
+        x: {
           min: 0,
           max: 100,
           ticks: { color: "#94a3b8", stepSize: 25, callback: (v) => v + "%" },
           grid: { color: "#1e293b" }
         },
-        x: {
+        y: {
           ticks: { color: "#f8fafc", font: { size: 13, weight: "bold" } },
           grid: { display: false }
         }
