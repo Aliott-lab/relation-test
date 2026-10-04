@@ -3,145 +3,465 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0E1030">
+  <meta name="color-scheme" content="dark">
   <title>شاخص وضعیت رابطه | کلینیک سپهر آرامش</title>
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <style>
     :root {
-      --bg-main: #0b0f19;
-      --card-bg: #161f30;
-      --card-border: #24324a;
-      --primary: #38bdf8;
-      --primary-hover: #0284c7;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --input-bg: #0f172a;
+      --ink: #0E1030;
+      --dusk: #17163F;
+      --plum: #2A1F52;
+      --sky: #8CCBEB;
+      --amber: #F3C58A;
+      --rose: #EE9AA0;
+      --text: #F3EEF8;
+      --muted: #A8A5C9;
+      --line: rgba(255, 255, 255, 0.10);
+      --glass: rgba(255, 255, 255, 0.05);
+      --ease-out: cubic-bezier(.22, 1, .36, 1);
     }
 
-    * { box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
-    body { background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 24px 12px; line-height: 1.7; }
-    .container { max-width: 920px; margin: 0 auto; background: var(--card-bg); padding: 35px 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--card-border); }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--ink);
+      color: var(--text);
+      font-family: 'Vazirmatn', system-ui, sans-serif;
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select, textarea { font-family: inherit; }
 
-    .clinic-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 5px; }
-    .clinic-brand { color: var(--primary); font-size: 1.2rem; font-weight: 600; letter-spacing: 0.5px; }
-    .clinic-logo-header { width: 38px; height: 38px; object-fit: contain; }
-    .clinic-logo-footer { width: 50px; height: 50px; object-fit: contain; margin-top: 15px; }
+    /* ───────── آسمان شب ───────── */
+    .sky {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+      background:
+        radial-gradient(560px 560px at 10% 4%, rgba(140, 203, 235, .14), transparent 70%),
+        radial-gradient(900px 440px at 12% 108%, rgba(238, 154, 160, .24), transparent 70%),
+        radial-gradient(700px 380px at 92% 102%, rgba(243, 197, 138, .12), transparent 70%),
+        linear-gradient(180deg, #0E1030 0%, #17163F 52%, #2A1F52 100%);
+    }
+    .star { position: absolute; border-radius: 50%; background: #fff; }
+    .star.tw { animation: twinkle 5s ease-in-out infinite; }
+    @keyframes twinkle { 0%, 100% { opacity: .15; } 50% { opacity: .95; } }
+    .moon {
+      position: absolute; top: 56px; left: 8%;
+      width: 40px; height: 40px; border-radius: 50%;
+      box-shadow: 9px -5px 0 0 #F6E2B8;
+      filter: drop-shadow(0 0 16px rgba(243, 197, 138, .55));
+      transform: rotate(-12deg);
+    }
 
-    h1 { text-align: center; color: #ffffff; margin-top: 0; margin-bottom: 25px; font-size: 1.7rem; }
-    h2 { text-align: center; color: #ffffff; margin-bottom: 20px; font-size: 1.5rem; }
+    .page { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 36px 16px 90px; }
 
-    .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 30px; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 12px; border: 1px solid var(--card-border); }
+    /* ───────── هدر ───────── */
+    .brand { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+    .logo-ring {
+      width: 68px; height: 68px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: radial-gradient(circle at 50% 30%, rgba(255,255,255,.14), rgba(255,255,255,.03));
+      border: 1px solid rgba(255, 255, 255, .16);
+      box-shadow: 0 0 0 8px rgba(140, 203, 235, .06), 0 10px 40px rgba(140, 203, 235, .22);
+    }
+    .logo-ring img { width: 42px; height: 42px; object-fit: contain; }
+    .brand-name { color: var(--sky); font-weight: 600; font-size: 1rem; }
+
+    h1 {
+      text-align: center; margin: 18px 0 10px;
+      font-size: clamp(2.1rem, 7.5vw, 3.1rem); font-weight: 800; line-height: 1.35;
+      background: linear-gradient(180deg, #ffffff 20%, #C9D3F5 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .lead { max-width: 46ch; margin: 0 auto 30px; text-align: center; color: var(--muted); font-size: 1rem; }
+
+    .intro-seq > * { animation: rise .9s var(--ease-out) both; }
+    .intro-seq > *:nth-child(2) { animation-delay: .08s; }
+    .intro-seq > *:nth-child(3) { animation-delay: .16s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+    /* ───────── پنل‌ها و فرم ───────── */
+    .panel {
+      background: var(--glass); border: 1px solid var(--line); border-radius: 24px;
+      padding: 24px; -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    }
+    .panel-title { margin: 0 0 18px; font-size: 1.05rem; font-weight: 700; }
+
+    .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
     .form-group { display: flex; flex-direction: column; }
-    .form-group label { font-size: 0.85rem; margin-bottom: 6px; color: var(--text-muted); }
-    .form-group input, .form-group select { padding: 9px 12px; background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 8px; font-size: 0.95rem; color: #ffffff; outline: none; transition: 0.2s; }
-    .form-group input:focus, .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+    .form-group label { font-size: .88rem; margin-bottom: 7px; color: var(--muted); }
+    .form-group input, .form-group select {
+      width: 100%; padding: 12px 14px; font-size: 1rem; color: #fff;
+      background: rgba(8, 10, 34, .55); border: 1px solid var(--line); border-radius: 12px;
+      outline: none; transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    .form-group input:hover, .form-group select:hover { border-color: rgba(255,255,255,.22); }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--sky); box-shadow: 0 0 0 4px rgba(140, 203, 235, .18); background: rgba(8, 10, 34, .8);
+    }
+    .form-group select {
+      -webkit-appearance: none; appearance: none; cursor: pointer; padding-left: 38px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5l5 5 5-5' fill='none' stroke='%23A8A5C9' stroke-width='1.8' stroke-linecap='round'/></svg>");
+      background-repeat: no-repeat; background-position: left 14px center;
+    }
+    .form-group select option { background: #17163F; color: #fff; }
+    .pop-in { animation: rise .45s var(--ease-out) both; }
 
-    input[type=number]::-webkit-inner-spin-button, 
-    input[type=number]::-webkit-outer-spin-button { 
-      -webkit-appearance: none; 
-      margin: 0; 
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    /* ───────── نوار پیشرفت ───────── */
+    .progress {
+      position: sticky; top: 10px; z-index: 20; margin: 22px 0 8px; padding: 12px 16px 14px;
+      border-radius: 16px; border: 1px solid var(--line);
+      background: rgba(14, 16, 48, .75); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
     }
-    input[type=number] {
-      -moz-appearance: textfield;
+    .progress-meta { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); margin-bottom: 8px; }
+    .progress-meta b { color: var(--text); font-weight: 600; }
+    .progress-track { height: 6px; border-radius: 99px; background: rgba(255,255,255,.09); overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0; border-radius: 99px;
+      background: linear-gradient(270deg, var(--sky), var(--amber));
+      box-shadow: 0 0 14px rgba(140, 203, 235, .6);
+      transition: width .5s var(--ease-out);
     }
+
+    /* ───────── بخش‌ها و پرسش‌ها ───────── */
+    .part-intro { margin: 30px 4px 14px; scroll-margin-top: 90px; }
+    .part-intro h3 { margin: 0; font-size: 1.3rem; font-weight: 800; }
+    .part-intro p { margin: 2px 0 0; color: var(--muted); font-size: .93rem; }
 
     .questions-wrapper { display: flex; flex-direction: column; gap: 12px; }
-    .question-row { padding: 14px 16px; border-radius: 10px; background: rgba(15, 23, 42, 0.45); border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 10px; transition: 0.2s; }
-    .question-row:hover { border-color: #334155; background: rgba(15, 23, 42, 0.7); }
-    .question-title { font-size: 0.97rem; font-weight: 500; color: #e2e8f0; }
 
-    .options { display: flex; flex-wrap: wrap; gap: 12px; }
-    .options label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.9rem; color: var(--text-muted); background: var(--input-bg); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--card-border); transition: 0.2s; }
-    .options label:hover { color: #ffffff; border-color: var(--primary); }
-    .options input[type="radio"] { accent-color: var(--primary); width: 16px; height: 16px; }
+    .q {
+      display: grid; grid-template-columns: 36px 1fr; column-gap: 14px; row-gap: 14px;
+      padding: 18px; border-radius: 18px;
+      background: rgba(255, 255, 255, .035); border: 1px solid var(--line);
+      transition: background .3s, border-color .3s, box-shadow .3s;
+    }
+    .q.active {
+      background: rgba(140, 203, 235, .07); border-color: rgba(140, 203, 235, .42);
+      box-shadow: 0 18px 50px -22px rgba(140, 203, 235, .45);
+    }
+    .q.answered .q-text { color: #cdc9e6; }
+    .q.missing { border-color: rgba(240, 112, 127, .6); background: rgba(240, 112, 127, .07); }
+    .q.shake { animation: shake .5s both; }
+    @keyframes shake { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
 
-    button.submit-btn { display: block; width: 100%; max-width: 320px; margin: 35px auto 10px auto; padding: 14px 20px; background: linear-gradient(135deg, #0284c7, #0ea5e9); color: white; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3); }
-    button.submit-btn:hover { background: linear-gradient(135deg, #0369a1, #0284c7); transform: translateY(-1px); }
-    button.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .q-num {
+      position: relative; width: 36px; height: 36px; border-radius: 50%;
+      display: grid; place-items: center; font-size: .85rem; font-weight: 600; color: var(--muted);
+      border: 1px solid var(--line); transition: background .3s, border-color .3s, color .3s;
+    }
+    .q-num .n { transition: opacity .2s; }
+    .q-num .c { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transform: scale(.3); }
+    .q.answered .q-num { background: var(--sky); border-color: var(--sky); color: var(--ink); }
+    .q.answered .q-num .n { opacity: 0; }
+    .q.answered .q-num .c { opacity: 1; transform: scale(1); transition: transform .45s cubic-bezier(.34, 1.56, .64, 1), opacity .2s; }
 
+    .q-text { margin: 0; align-self: center; font-size: 1.02rem; font-weight: 500; line-height: 2; }
+
+    .opts { grid-column: 1 / -1; display: grid; gap: 8px; }
+    .opts-4 { grid-template-columns: repeat(4, 1fr); }
+    .opts-2 { grid-template-columns: repeat(2, 1fr); max-width: 320px; }
+    @media (min-width: 640px) { .opts { grid-column: 2; } }
+    @media (max-width: 520px) { .opts-4 { grid-template-columns: repeat(2, 1fr); } .panel { padding: 18px; } .q { padding: 16px; } }
+
+    .opt { position: relative; display: block; cursor: pointer; }
+    .opt input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+    .opt-body {
+      position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; gap: 7px;
+      min-height: 46px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--line);
+      background: rgba(8, 10, 34, .4); color: var(--muted); font-size: .93rem; font-weight: 500; text-align: center;
+      user-select: none; -webkit-tap-highlight-color: transparent;
+      transition: background .2s, color .2s, border-color .2s, transform .15s;
+    }
+    .opt:hover .opt-body { border-color: rgba(140, 203, 235, .55); color: var(--text); }
+    .opt:active .opt-body { transform: scale(.97); }
+    .opt input:checked + .opt-body { background: var(--sky); border-color: var(--sky); color: var(--ink); font-weight: 700; }
+    .opt input:checked + .opt-body::before {
+      content: ""; width: 14px; height: 14px; background: currentColor;
+      -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3.5 8.5l3 3 6-7' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / contain no-repeat;
+      mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3.5 8.5l3 3 6-7' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / contain no-repeat;
+    }
+    .opt input:focus-visible + .opt-body { outline: 2px solid var(--amber); outline-offset: 2px; }
+    .opt-body.pop { animation: pop .4s cubic-bezier(.34, 1.56, .64, 1); }
+    @keyframes pop { 0% { transform: scale(.92); } 60% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+    .ripple {
+      position: absolute; border-radius: 50%; background: currentColor; opacity: .28; pointer-events: none;
+      transform: scale(0); animation: ripple .6s ease-out forwards;
+    }
+    @keyframes ripple { to { transform: scale(1); opacity: 0; } }
+
+    /* ───────── دکمه‌ها ───────── */
+    .submit-area { margin: 38px 0 6px; text-align: center; }
+    .hint { color: var(--muted); font-size: .92rem; margin: 0 0 14px; min-height: 1.8em; }
+    .btn {
+      position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      border: 0; border-radius: 16px; cursor: pointer; font-weight: 700; text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .15s, box-shadow .25s, filter .2s;
+    }
+    .btn-primary {
+      width: 100%; max-width: 360px; min-height: 58px; font-size: 1.08rem;
+      background: var(--amber); color: var(--ink); box-shadow: 0 12px 30px -10px rgba(243, 197, 138, .5);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 38px -10px rgba(243, 197, 138, .7); }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:focus-visible, .btn-call:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+    .btn:disabled { cursor: progress; transform: none; }
+    .btn-primary.ready { animation: glow 2.6s ease-in-out infinite; }
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 12px 30px -10px rgba(243, 197, 138, .5); }
+      50% { box-shadow: 0 12px 44px -4px rgba(243, 197, 138, .85); }
+    }
+    .spinner {
+      display: none; width: 20px; height: 20px; border-radius: 50%;
+      border: 2.5px solid rgba(14, 16, 48, .25); border-top-color: var(--ink); animation: spin .8s linear infinite;
+    }
+    .btn.loading .spinner { display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #survey-view { transition: opacity .4s ease, transform .4s ease, filter .4s ease; }
+    #survey-view.leaving { opacity: 0; transform: translateY(-14px); filter: blur(4px); }
+
+    .toast {
+      position: fixed; z-index: 50; left: 50%; bottom: 26px; max-width: calc(100% - 32px);
+      padding: 12px 20px; border-radius: 14px; font-size: .95rem;
+      background: rgba(14, 16, 48, .94); border: 1px solid rgba(240, 112, 127, .5); color: var(--text);
+      transform: translate(-50%, 24px); opacity: 0; pointer-events: none;
+      transition: transform .35s var(--ease-out), opacity .35s;
+    }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+    /* ───────── صفحه نتیجه ───────── */
     #result-view { display: none; }
-    
-    .chart-box-card { background: rgba(15, 23, 42, 0.7); border: 1px solid var(--card-border); border-radius: 14px; padding: 22px; margin-top: 15px; margin-bottom: 20px; }
-    .chart-box-card h3 { margin: 0 0 16px 0; color: var(--primary); font-size: 1.2rem; text-align: center; }
+    .stage { opacity: 0; transform: translateY(18px); transition: opacity .8s ease, transform .8s var(--ease-out); }
+    .stage.show { opacity: 1; transform: none; }
 
-    .clinic-footer { margin-top: 40px; padding: 25px 20px; background: rgba(15, 23, 42, 0.7); border-radius: 12px; border: 1px solid var(--card-border); text-align: center; }
-    .clinic-footer h3 { color: var(--primary); margin: 0 0 12px 0; font-size: 1.15rem; }
-    .clinic-footer p { margin: 6px 0; color: #cbd5e1; font-size: 0.95rem; }
-    .clinic-footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
+    .report-head { text-align: center; margin-bottom: 22px; }
+    .report-head h2 { margin: 6px 0 4px; font-size: clamp(1.7rem, 6vw, 2.3rem); font-weight: 800; }
+    .report-for { margin: 0; color: var(--muted); }
+    .report-for b { color: var(--text); font-weight: 600; }
+
+    .map-panel { margin-bottom: 18px; }
+    .map-panel .panel-title { text-align: center; }
+    .map-frame { max-width: 440px; margin: 0 auto; direction: ltr; }
+    .map-cap { direction: rtl; font-size: .8rem; color: var(--muted); }
+    .map-cap.top { text-align: left; margin-bottom: 8px; }
+    .map-cap.bottom { text-align: right; margin-top: 8px; }
+
+    .map {
+      position: relative; aspect-ratio: 1; display: grid; grid-template: 1fr 1fr / 1fr 1fr;
+      border-radius: 22px; border: 1px solid var(--line); overflow: hidden; background: rgba(8, 10, 34, .5);
+    }
+    .quad {
+      --q: 255, 255, 255; direction: rtl; display: flex; padding: 12px; font-size: .82rem; font-weight: 600; line-height: 1.6;
+      color: var(--muted); background: rgba(var(--q), .07); transition: background .8s, color .8s;
+    }
+    .quad span { max-width: 74%; }
+    .q-tl { --q: 245, 158, 11; align-items: flex-start; justify-content: flex-start; border-right: 1px dashed rgba(255,255,255,.18); border-bottom: 1px dashed rgba(255,255,255,.18); }
+    .q-tr { --q: 239, 68, 68; align-items: flex-start; justify-content: flex-end; border-bottom: 1px dashed rgba(255,255,255,.18); text-align: right; }
+    .q-bl { --q: 34, 197, 94; align-items: flex-end; justify-content: flex-start; border-right: 1px dashed rgba(255,255,255,.18); }
+    .q-br { --q: 251, 146, 60; align-items: flex-end; justify-content: flex-end; text-align: right; }
+    .quad.on { background: rgba(var(--q), .24); color: #fff; }
+
+    .dot {
+      position: absolute; left: 50%; bottom: 50%; width: 22px; height: 22px; border-radius: 50%;
+      transform: translate(-50%, 50%); background: #fff;
+      box-shadow: 0 0 0 5px rgba(var(--st-rgb, 255,255,255), .38), 0 0 28px 8px rgba(var(--st-rgb, 255,255,255), .6);
+      transition: left 1.4s var(--ease-out), bottom 1.4s var(--ease-out);
+    }
+    .dot::after {
+      content: ""; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid rgba(var(--st-rgb, 255,255,255), .9); opacity: 0;
+    }
+    .map.landed .dot::after { animation: ping 2s ease-out 3; }
+    @keyframes ping { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(3.6); opacity: 0; } }
+    .map-legend { margin: 14px 0 0; text-align: center; color: var(--muted); font-size: .88rem; }
+    .map-legend i { display: inline-block; width: 10px; height: 10px; margin-inline-end: 6px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px #fff; }
+
+    .diagnosis {
+      --st: #fff; --st-rgb: 255, 255, 255;
+      margin-bottom: 18px; padding: 32px 22px; text-align: center; border-radius: 24px;
+      border: 1px solid rgba(var(--st-rgb), .5);
+      background: radial-gradient(120% 130% at 50% 0%, rgba(var(--st-rgb), .2), rgba(14, 16, 48, .65) 72%);
+      box-shadow: 0 30px 80px -40px rgba(var(--st-rgb), .7);
+    }
+    .diagnosis h4 { margin: 0 0 8px; font-size: .95rem; font-weight: 500; color: var(--muted); }
+    .diagnosis-title { margin: 0 0 10px; font-size: clamp(1.7rem, 6vw, 2.2rem); font-weight: 800; line-height: 1.4; color: var(--st); }
+    .diagnosis-desc { max-width: 52ch; margin: 0 auto; font-size: 1rem; line-height: 2; color: #dad6f0; }
+
+    .meters-panel { margin-bottom: 18px; }
+    .meters-panel .panel-title { text-align: center; }
+    .meter + .meter { margin-top: 26px; }
+    .meter-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-weight: 600; }
+    .meter-val { font-size: 1.5rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .meter-track { position: relative; height: 16px; border-radius: 99px; background: rgba(255,255,255,.08); }
+    .meter-fill { height: 100%; width: 0; border-radius: 99px; transition: width 1.4s var(--ease-out); }
+    .meter-mark { position: absolute; top: -5px; bottom: -5px; left: 50%; width: 2px; background: rgba(255,255,255,.55); border-radius: 2px; }
+    .meter-mark-label { position: absolute; top: 24px; left: 50%; transform: translateX(-50%); font-size: .75rem; color: var(--muted); white-space: nowrap; }
+    .meter-spacer { height: 18px; }
+
+    .clinic { padding: 26px 22px; text-align: center; }
+    .clinic-logo { width: 44px; height: 44px; object-fit: contain; }
+    .clinic h3 { margin: 8px 0 12px; font-size: 1.15rem; color: var(--sky); }
+    .clinic p { margin: 6px 0; color: #d5d1ec; font-size: .97rem; }
+    .btn-call { margin-top: 16px; min-height: 54px; padding: 0 28px; font-size: 1.08rem; background: var(--amber); color: var(--ink); box-shadow: 0 12px 30px -12px rgba(243, 197, 138, .6); }
+    .btn-call:hover { transform: translateY(-2px); }
+    .btn-call:active { transform: scale(.98); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
 
-<div class="container">
+<div class="sky" aria-hidden="true"><div class="moon"></div></div>
+
+<main class="page">
+
   <div id="survey-view">
-    <div class="clinic-header">
-      <span class="clinic-brand">کلینیک سپهر آرامش</span>
-      <img src="https://cdn.imgurl.ir/uploads/l39464_et_1s.png" alt="لوگو کلینیک" class="clinic-logo-header">
+    <div class="intro-seq">
+      <header class="brand">
+        <div class="logo-ring"><img src="https://cdn.imgurl.ir/uploads/l39464_et_1s.png" alt="لوگو کلینیک" onerror="this.style.display='none'"></div>
+        <span class="brand-name">کلینیک سپهر آرامش</span>
+      </header>
+      <h1>شاخص وضعیت رابطه</h1>
+      <p class="lead">به ۸۸ عبارت درباره‌ی رابطه‌ی خود پاسخ دهید. پاسخ درست یا غلط وجود ندارد؛ همان چیزی را انتخاب کنید که واقعاً می‌بینید.</p>
     </div>
-    <h1>شاخص وضعیت رابطه</h1>
-    
+
     <form id="quiz-form">
-      <div class="profile-grid">
-        <div class="form-group"><label>نام و نام خانوادگی:</label><input type="text" id="p_name" required></div>
-        <div class="form-group">
-          <label>جنسیت:</label>
-          <select id="p_gender" required>
-            <option value="" disabled selected>انتخاب کنید</option>
-            <option value="مرد">مرد</option>
-            <option value="زن">زن</option>
-          </select>
+      <section class="panel">
+        <h2 class="panel-title">اطلاعات شما</h2>
+        <div class="profile-grid">
+          <div class="form-group"><label for="p_name">نام و نام خانوادگی:</label><input type="text" id="p_name" autocomplete="name" required></div>
+          <div class="form-group">
+            <label for="p_gender">جنسیت:</label>
+            <select id="p_gender" required>
+              <option value="" disabled selected>انتخاب کنید</option>
+              <option value="مرد">مرد</option>
+              <option value="زن">زن</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="p_age">سن:</label><input type="tel" inputmode="numeric" pattern="[0-9]*" id="p_age" required></div>
+          <div class="form-group"><label for="p_edu">تحصیلات:</label><input type="text" id="p_edu" required></div>
+          <div class="form-group"><label for="p_phone">شماره تماس:</label><input type="tel" id="p_phone" autocomplete="tel" required></div>
+          <div class="form-group">
+            <label for="p_married">وضعیت تأهل:</label>
+            <select id="p_married" required>
+              <option value="ازدواج کرده‌ام">ازدواج کرده‌ام</option>
+              <option value="ازدواج نکرده‌ام">ازدواج نکرده‌ام</option>
+            </select>
+          </div>
+          <div class="form-group" id="fg_m_year"><label for="p_m_year">سال ازدواج:</label><input type="text" id="p_m_year" required></div>
+          <div class="form-group" id="fg_children"><label for="p_children">تعداد فرزند:</label><input type="tel" inputmode="numeric" id="p_children" required></div>
+          <div class="form-group" id="fg_dating" style="display: none;"><label for="p_dating">مدت آشنایی:</label><input type="text" id="p_dating"></div>
         </div>
-        <div class="form-group"><label>سن:</label><input type="tel" inputmode="numeric" pattern="[0-9]*" id="p_age" required></div>
-        <div class="form-group"><label>تحصیلات:</label><input type="text" id="p_edu" required></div>
-        <div class="form-group"><label>شماره تماس:</label><input type="tel" id="p_phone" required></div>
-        <div class="form-group">
-          <label>وضعیت تأهل:</label>
-          <select id="p_married" required>
-            <option value="ازدواج کرده‌ام">ازدواج کرده‌ام</option>
-            <option value="ازدواج نکرده‌ام">ازدواج نکرده‌ام</option>
-          </select>
-        </div>
-        <div class="form-group" id="fg_m_year"><label>سال ازدواج:</label><input type="text" id="p_m_year" required></div>
-        <div class="form-group" id="fg_children"><label>تعداد فرزند:</label><input type="tel" inputmode="numeric" id="p_children" required></div>
-        <div class="form-group" id="fg_dating" style="display: none;"><label>مدت آشنایی:</label><input type="text" id="p_dating"></div>
+      </section>
+
+      <div class="progress" id="progress" aria-live="polite">
+        <div class="progress-meta"><span>پیشرفت شما</span><b id="progress-count">۰ از ۸۸</b></div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
       </div>
 
       <div class="questions-wrapper" id="questions-container"></div>
-      <button type="submit" id="submit-btn" class="submit-btn">ثبت پاسخ‌ها و مشاهده نمودار</button>
+
+      <div class="submit-area" id="submit-area">
+        <p class="hint" id="submit-hint">۸۸ عبارت باقی مانده است</p>
+        <button type="submit" id="submit-btn" class="btn btn-primary">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn-label">ثبت پاسخ‌ها و مشاهده نتیجه</span>
+        </button>
+      </div>
     </form>
   </div>
 
   <div id="result-view">
-    <div class="clinic-header">
-      <span class="clinic-brand">کلینیک سپهر آرامش</span>
-      <img src="https://cdn.imgurl.ir/uploads/l39464_et_1s.png" alt="لوگو کلینیک" class="clinic-logo-header">
+    <div class="report-head stage" data-t="0">
+      <header class="brand">
+        <div class="logo-ring"><img src="https://cdn.imgurl.ir/uploads/l39464_et_1s.png" alt="لوگو کلینیک" onerror="this.style.display='none'"></div>
+        <span class="brand-name">کلینیک سپهر آرامش</span>
+      </header>
+      <h2>گزارش جامع وضعیت رابطه</h2>
+      <p class="report-for" id="report-for"></p>
     </div>
-    <h2>گزارش جامع وضعیت رابطه</h2>
 
-    <div class="chart-box-card">
-      <h3>پروفایل نمرات و شاخص‌های رابطه</h3>
-      <div style="position: relative; height: 520px;">
-        <canvas id="main_comparison_chart"></canvas>
+    <section class="panel map-panel stage" data-t="250">
+      <h3 class="panel-title">جایگاه رابطه‌ی شما</h3>
+      <div class="map-frame">
+        <div class="map-cap top">فاصله‌گیری: هر چه بالاتر، بیشتر</div>
+        <div class="map" id="rel-map">
+          <div class="quad q-tl" data-q="tl"><span>طلاق عاطفی</span></div>
+          <div class="quad q-tr" data-q="tr"><span>بحرانی آستانه طلاق</span></div>
+          <div class="quad q-bl" data-q="bl"><span>رابطه سالم و پایدار</span></div>
+          <div class="quad q-br" data-q="br"><span>پرتنش اما درگیر</span></div>
+          <div class="dot" id="map-dot"></div>
+        </div>
+        <div class="map-cap bottom">تعارض فعال: هر چه به راست‌تر، بیشتر</div>
       </div>
+      <p class="map-legend"><i></i>نقطه‌ی روشن، جایگاه شما را بر اساس پاسخ‌هایتان نشان می‌دهد.</p>
+    </section>
+
+    <div id="matrix-result-container" class="diagnosis stage" data-t="1900">
+      <h4>نتیجه‌گیری و تشخیص وضعیت کلی رابطه</h4>
+      <div id="matrix-title" class="diagnosis-title"></div>
+      <p id="matrix-desc" class="diagnosis-desc"></p>
     </div>
 
-    <div class="clinic-footer">
+    <section class="panel meters-panel stage" id="meters-panel" data-t="2100">
+      <h3 class="panel-title">شاخص‌های کلیدی رابطه</h3>
+      <div class="meter" id="meter-conflict">
+        <div class="meter-head"><span>تعارض فعال</span><span class="meter-val">۰٪</span></div>
+        <div class="meter-track"><div class="meter-fill"></div><i class="meter-mark"></i><span class="meter-mark-label">مرز ۵۰٪</span></div>
+      </div>
+      <div class="meter-spacer"></div>
+      <div class="meter" id="meter-distance">
+        <div class="meter-head"><span>فاصله‌گیری</span><span class="meter-val">۰٪</span></div>
+        <div class="meter-track"><div class="meter-fill"></div><i class="meter-mark"></i><span class="meter-mark-label">مرز ۵۰٪</span></div>
+      </div>
+      <div class="meter-spacer"></div>
+    </section>
+
+    <section class="panel clinic stage" data-t="2300">
+      <img src="https://cdn.imgurl.ir/uploads/l39464_et_1s.png" alt="لوگو کلینیک" class="clinic-logo" onerror="this.style.display='none'">
       <h3>ارتباط با کلینیک سپهر آرامش</h3>
       <p><strong>آدرس:</strong> نبش احمد آباد ۷ - ساختمان گوهرشاد - طبقه سوم - واحد ۳۰۹</p>
-      <p><strong>تلفن تماس و مشاوره:</strong> <a href="tel:09150703239" dir="ltr">0915 070 3239</a></p>
-      <div>
-        <img src="https://cdn.imgurl.ir/uploads/l39464_et_1s.png" alt="لوگو کلینیک" class="clinic-logo-footer">
-      </div>
-    </div>
+      <p><strong>تلفن تماس و مشاوره:</strong></p>
+      <a class="btn btn-call" href="tel:09150703239"><span dir="ltr">0915 070 3239</span></a>
+    </section>
   </div>
-</div>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-Chart.register(ChartDataLabels);
-
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxJskAjHrcMDeHoudvkxNi4eCZ9XiFQ8AQq4zW6BbaFwx80zAc_ieKHYS8ALE-wueyZYA/exec";
 
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const toFa = (n) => String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
+const faToEn = (s) => s.replace(/[۰-۹]/g, (d) => d.charCodeAt(0) - 1776).replace(/[٠-٩]/g, (d) => d.charCodeAt(0) - 1632);
+
+/* ───────── ستاره‌های آسمان ───────── */
+(function () {
+  const sky = document.querySelector(".sky");
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < 64; i++) {
+    const s = document.createElement("i");
+    s.className = "star" + (i % 4 === 0 ? " tw" : "");
+    const size = Math.random() < 0.15 ? 2.2 : Math.random() * 1.2 + 0.8;
+    s.style.cssText = `left:${(Math.random() * 100).toFixed(1)}%;top:${(Math.random() * 72).toFixed(1)}%;width:${size}px;height:${size}px;opacity:${(Math.random() * 0.5 + 0.25).toFixed(2)};animation-delay:${(Math.random() * 5).toFixed(1)}s`;
+    frag.appendChild(s);
+  }
+  sky.appendChild(frag);
+})();
+
+/* ───────── فرم اطلاعات فردی ───────── */
 const marriedSelect = document.getElementById("p_married");
 const fgMYear = document.getElementById("fg_m_year");
 const fgChildren = document.getElementById("fg_children");
@@ -150,10 +470,17 @@ const inputMYear = document.getElementById("p_m_year");
 const inputChildren = document.getElementById("p_children");
 const inputDating = document.getElementById("p_dating");
 
-marriedSelect.addEventListener("change", function() {
+function showField(el) {
+  el.style.display = "flex";
+  el.classList.remove("pop-in");
+  void el.offsetWidth;
+  el.classList.add("pop-in");
+}
+
+marriedSelect.addEventListener("change", function () {
   if (this.value === "ازدواج کرده‌ام") {
-    fgMYear.style.display = "flex";
-    fgChildren.style.display = "flex";
+    showField(fgMYear);
+    showField(fgChildren);
     fgDating.style.display = "none";
     inputMYear.required = true;
     inputChildren.required = true;
@@ -162,7 +489,7 @@ marriedSelect.addEventListener("change", function() {
   } else {
     fgMYear.style.display = "none";
     fgChildren.style.display = "none";
-    fgDating.style.display = "flex";
+    showField(fgDating);
     inputMYear.required = false;
     inputChildren.required = false;
     inputDating.required = true;
@@ -171,6 +498,16 @@ marriedSelect.addEventListener("change", function() {
   }
 });
 
+// تبدیل خودکار ارقام فارسی به انگلیسی در فیلدهای عددی
+["p_age", "p_phone", "p_children"].forEach((id) => {
+  const el = document.getElementById(id);
+  el.addEventListener("input", () => {
+    const v = faToEn(el.value);
+    if (v !== el.value) el.value = v;
+  });
+});
+
+/* ───────── داده‌های آزمون ───────── */
 const subscales = [
   { id: 1, title: "عیب جویی", range: [1, 5], maxRaw: 6.0 },
   { id: 2, title: "خوار کردن", range: [6, 10], maxRaw: 6.0 },
@@ -196,7 +533,7 @@ const mainQuestions = [
   "در رابطه، احساس برتری نسبت به طرف مقابل داریم.",
   "در دعواها، حرکات بدنی تحقیرآمیز انجام می دهیم مثل چشم ‌غره یا ادا درآوردن.",
   "از لحن یا کلمات طرف مقابل احساس حقارت می‌کنیم.",
-  "وقتی گلایه ای می‌شود، بلافاصله دلیل می‌آوریم که تقصیر من نبوده.",
+  "وقتی گلایه ای می‌شود، بلافاصله دلیل می‌‌آوریم که تقصیر من نبوده.",
   "در مشاجرات، طرف مقابل را به ‌عنوان مقصر اصلی معرفی می‌کنیم.",
   "برایمان سخت است که یک اشتباه را بدون بهانه ‌آوردن بپذیریم.",
   "در مشاجرات، بیشتر به فکر دفاع از خودمان هستیم تا درک حرف طرف مقابل.",
@@ -279,38 +616,148 @@ const normQuestions = [
   "همسرم نمی تواند منطقی و عقلانی باشد."
 ];
 
+/* ───────── ساخت پرسش‌ها ───────── */
 const container = document.getElementById("questions-container");
+const rows = [];
 
+function addPartIntro(title, caption) {
+  const el = document.createElement("div");
+  el.className = "part-intro";
+  el.innerHTML = `<h3></h3><p></p>`;
+  el.querySelector("h3").textContent = title;
+  el.querySelector("p").textContent = caption;
+  container.appendChild(el);
+  return el;
+}
+
+function buildRow(qNum, qText, options, kind, intro) {
+  const row = document.createElement("article");
+  row.className = "q";
+  row.setAttribute("role", "group");
+  row.setAttribute("aria-labelledby", `qt_${qNum}`);
+  row.dataset.num = qNum;
+  row.introBefore = intro || null;
+  row.innerHTML = `
+    <div class="q-num" aria-hidden="true">
+      <span class="n">${toFa(qNum)}</span>
+      <span class="c"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </div>
+    <p class="q-text" id="qt_${qNum}"></p>
+    <div class="opts ${kind}" role="radiogroup" aria-labelledby="qt_${qNum}">
+      ${options.map(([val, label]) => `<label class="opt"><input type="radio" name="q_${qNum}" value="${val}"><span class="opt-body">${label}</span></label>`).join("")}
+    </div>
+  `;
+  row.querySelector(".q-text").textContent = qText;
+  container.appendChild(row);
+  rows.push(row);
+}
+
+const intro1 = addPartIntro("بخش اول", "برای هر عبارت مشخص کنید این رفتار از طرف چه کسی دیده می‌شود. (۵۵ عبارت)");
 mainQuestions.forEach((qText, index) => {
-  const qNum = index + 1;
-  const qDiv = document.createElement("div");
-  qDiv.className = "question-row";
-  qDiv.innerHTML = `
-    <div class="question-title"><strong>${qNum}.</strong> ${qText}</div>
-    <div class="options">
-      <label><input type="radio" name="q_${qNum}" value="me" required> فقط من</label>
-      <label><input type="radio" name="q_${qNum}" value="spouse"> فقط همسرم</label>
-      <label><input type="radio" name="q_${qNum}" value="both"> هر دو</label>
-      <label><input type="radio" name="q_${qNum}" value="none"> هیچ‌کدام</label>
-    </div>
-  `;
-  container.appendChild(qDiv);
+  buildRow(index + 1, qText, [["me", "فقط من"], ["spouse", "فقط همسرم"], ["both", "هر دو"], ["none", "هیچ‌کدام"]], "opts-4", index === 0 ? intro1 : null);
 });
 
+const intro2 = addPartIntro("بخش دوم", "هر عبارت را با «بله» یا «خیر» پاسخ دهید. (۳۳ عبارت)");
 normQuestions.forEach((qText, index) => {
-  const qNum = index + 56;
-  const qDiv = document.createElement("div");
-  qDiv.className = "question-row";
-  qDiv.innerHTML = `
-    <div class="question-title"><strong>${qNum}.</strong> ${qText}</div>
-    <div class="options">
-      <label><input type="radio" name="q_${qNum}" value="yes" required> بله</label>
-      <label><input type="radio" name="q_${qNum}" value="no"> خیر</label>
-    </div>
-  `;
-  container.appendChild(qDiv);
+  buildRow(index + 56, qText, [["yes", "بله"], ["no", "خیر"]], "opts-2", index === 0 ? intro2 : null);
 });
 
+/* ───────── تعامل: پیشرفت، انیمیشن کلیک، پیمایش خودکار ───────── */
+const TOTAL = rows.length;
+const progressCount = document.getElementById("progress-count");
+const progressFill = document.getElementById("progress-fill");
+const submitHint = document.getElementById("submit-hint");
+const submitBtn = document.getElementById("submit-btn");
+const submitArea = document.getElementById("submit-area");
+let activeRow = null;
+
+function setActive(row) {
+  if (activeRow === row) return;
+  if (activeRow) activeRow.classList.remove("active");
+  activeRow = row;
+  if (row) row.classList.add("active");
+}
+
+function answeredCount() { return rows.filter((r) => r.dataset.answered === "1").length; }
+
+function updateProgress() {
+  const n = answeredCount();
+  progressCount.textContent = `${toFa(n)} از ${toFa(TOTAL)}`;
+  progressFill.style.width = (n / TOTAL * 100) + "%";
+  const left = TOTAL - n;
+  if (left === 0) {
+    submitHint.textContent = "همه‌ی پاسخ‌ها کامل است. می‌توانید نتیجه را ببینید.";
+    submitBtn.classList.add("ready");
+  } else {
+    submitHint.textContent = `${toFa(left)} عبارت باقی مانده است`;
+    submitBtn.classList.remove("ready");
+  }
+}
+
+function scrollToRow(row) {
+  const behavior = reduceMotion ? "auto" : "smooth";
+  if (row.introBefore) row.introBefore.scrollIntoView({ behavior, block: "start" });
+  else row.scrollIntoView({ behavior, block: "center" });
+}
+
+container.addEventListener("change", (e) => {
+  const input = e.target;
+  if (!input.matches('input[type="radio"]')) return;
+  const row = input.closest(".q");
+  const firstTime = row.dataset.answered !== "1";
+
+  row.dataset.answered = "1";
+  row.classList.add("answered");
+  row.classList.remove("missing");
+
+  const body = input.nextElementSibling;
+  body.classList.remove("pop");
+  void body.offsetWidth;
+  body.classList.add("pop");
+
+  setActive(row);
+  updateProgress();
+
+  if (firstTime) {
+    const next = rows[rows.indexOf(row) + 1];
+    if (next && next.dataset.answered !== "1") {
+      setTimeout(() => { scrollToRow(next); setActive(next); }, 380);
+    } else if (!next) {
+      setTimeout(() => submitArea.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" }), 380);
+    }
+  }
+});
+
+container.addEventListener("focusin", (e) => {
+  const row = e.target.closest(".q");
+  if (row) setActive(row);
+});
+
+// موج (ripple) هنگام کلیک روی گزینه‌ها و دکمه‌ها
+document.addEventListener("pointerdown", (e) => {
+  const t = e.target.closest(".opt-body, .btn");
+  if (!t || t.disabled) return;
+  const r = t.getBoundingClientRect();
+  const d = Math.max(r.width, r.height) * 1.6;
+  const s = document.createElement("span");
+  s.className = "ripple";
+  s.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`;
+  t.appendChild(s);
+  s.addEventListener("animationend", () => s.remove());
+});
+
+const toastEl = document.getElementById("toast");
+let toastTimer;
+function toast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3200);
+}
+
+updateProgress();
+
+/* ───────── محاسبات ───────── */
 function getScore(answer) {
   if (answer === "both") return 1.2;
   if (answer === "me" || answer === "spouse") return 1.0;
@@ -318,24 +765,134 @@ function getScore(answer) {
 }
 
 function getColor(percentage) {
-  if (percentage <= 25) return "#22c55e";
-  if (percentage <= 50) return "#facc15";
-  if (percentage <= 75) return "#fb923c";
-  return "#f87171";
+  if (percentage < 50) return "#22c55e"; // کم و ایمن (سبز)
+  return "#ef4444"; // زیاد و نیازمند مداخله (قرمز)
 }
 
-document.getElementById("quiz-form").addEventListener("submit", async function(e) {
+function hexToRgb(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+}
+
+function countUp(el, to, dur) {
+  if (reduceMotion) { el.textContent = toFa(to) + "٪"; return; }
+  const t0 = performance.now();
+  (function frame(t) {
+    const p = Math.min(1, (t - t0) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = toFa(Math.round(to * eased)) + "٪";
+    if (p < 1) requestAnimationFrame(frame);
+  })(t0);
+}
+
+/* ───────── نمایش نتیجه ───────── */
+function showResult(info) {
+  const { name, conflict, distancing, matrixResult } = info;
+  const surveyView = document.getElementById("survey-view");
+  const resultView = document.getElementById("result-view");
+
+  surveyView.style.display = "none";
+  resultView.style.display = "block";
+  window.scrollTo({ top: 0, behavior: "auto" });
+
+  const forEl = document.getElementById("report-for");
+  forEl.innerHTML = "برای: <b></b>";
+  forEl.querySelector("b").textContent = name;
+
+  // کادر تحلیل
+  const rgb = hexToRgb(matrixResult.borderColor);
+  const diag = document.getElementById("matrix-result-container");
+  diag.style.setProperty("--st", matrixResult.textColor);
+  diag.style.setProperty("--st-rgb", rgb);
+  document.getElementById("matrix-title").textContent = matrixResult.title;
+  document.getElementById("matrix-desc").textContent = matrixResult.desc;
+
+  // نقشه
+  const map = document.getElementById("rel-map");
+  const dot = document.getElementById("map-dot");
+  map.style.setProperty("--st-rgb", rgb);
+  dot.style.setProperty("--st-rgb", rgb);
+  const clamp = (v) => Math.min(94, Math.max(6, v));
+  const quadKey = (distancing >= 50 ? "t" : "b") + (conflict >= 50 ? "r" : "l");
+
+  setTimeout(() => {
+    dot.style.left = clamp(conflict) + "%";
+    dot.style.bottom = clamp(distancing) + "%";
+  }, reduceMotion ? 0 : 500);
+
+  setTimeout(() => {
+    map.classList.add("landed");
+    map.querySelector(`.quad[data-q="${quadKey}"]`).classList.add("on");
+  }, reduceMotion ? 0 : 1700);
+
+  // شاخص‌ها
+  const meters = [
+    { el: document.getElementById("meter-conflict"), value: conflict },
+    { el: document.getElementById("meter-distance"), value: distancing }
+  ];
+  let metersPlayed = false;
+  const panel = document.getElementById("meters-panel");
+  function playMeters() {
+    if (metersPlayed) return;
+    metersPlayed = true;
+    meters.forEach(({ el, value }) => {
+      const color = getColor(value);
+      const fill = el.querySelector(".meter-fill");
+      const val = el.querySelector(".meter-val");
+      fill.style.background = `linear-gradient(270deg, ${color}, ${color}cc)`;
+      fill.style.boxShadow = `0 0 16px ${color}88`;
+      val.style.color = color;
+      requestAnimationFrame(() => { fill.style.width = value + "%"; });
+      countUp(val, value, 1400);
+    });
+  }
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((en) => en.isIntersecting)) {
+        io.disconnect();
+        setTimeout(playMeters, panel.classList.contains("show") ? 0 : 700);
+      }
+    }, { threshold: 0.35 });
+    io.observe(panel);
+  } else {
+    setTimeout(playMeters, 2200);
+  }
+
+  // ورود مرحله‌به‌مرحله بخش‌ها
+  document.querySelectorAll("#result-view .stage").forEach((el) => {
+    setTimeout(() => el.classList.add("show"), reduceMotion ? 0 : Number(el.dataset.t));
+  });
+}
+
+/* ───────── ثبت و محاسبه ───────── */
+document.getElementById("quiz-form").addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  const submitBtn = document.getElementById("submit-btn");
+  // بررسی پرسش‌های بی‌پاسخ
+  const missing = rows.filter((r) => r.dataset.answered !== "1");
+  if (missing.length) {
+    missing.forEach((r) => r.classList.add("missing"));
+    const first = missing[0];
+    scrollToRow(first);
+    setActive(first);
+    first.classList.remove("shake");
+    void first.offsetWidth;
+    first.classList.add("shake");
+    toast(`هنوز به ${toFa(missing.length)} عبارت پاسخ نداده‌اید.`);
+    return;
+  }
+
+  const btnLabel = submitBtn.querySelector(".btn-label");
   submitBtn.disabled = true;
-  submitBtn.innerText = "در حال پردازش داده‌ها...";
+  submitBtn.classList.remove("ready");
+  submitBtn.classList.add("loading");
+  btnLabel.innerText = "در حال تحلیل پاسخ‌ها...";
 
   const formData = new FormData(e.target);
   let totalRawScore = 0;
   let scoresMap = {};
 
-  const dimensionResults = subscales.map(scale => {
+  subscales.forEach(scale => {
     let subRaw = 0;
     for (let q = scale.range[0]; q <= scale.range[1]; q++) {
       subRaw += getScore(formData.get(`q_${q}`));
@@ -343,20 +900,9 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     totalRawScore += subRaw;
     const percent = Math.min(100, Math.round((subRaw / scale.maxRaw) * 100));
     scoresMap[scale.title] = percent;
-    return {
-      id: scale.id,
-      title: scale.title,
-      percent: percent,
-      color: getColor(percent)
-    };
   });
 
   const overallPercent = Math.min(100, Math.round((totalRawScore / 66.0) * 100));
-
-  const all12Results = [
-    ...dimensionResults,
-    { id: 12, title: "وضعیت کلی رابطه", percent: overallPercent, color: getColor(overallPercent) }
-  ];
 
   let normScore = 0;
   for (let q = 56; q <= 88; q++) {
@@ -365,6 +911,63 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     }
   }
 
+  // ۱. محاسبه شاخص تعارض فعال (میانگین ۶ مقیاس: عیب جویی، خوار کردن، مقابله، شکست تلاشهای ترمیمی، آغاز طوفانی، فوران هیجان)
+  const activeConflictKeys = [
+    "عیب جویی",
+    "خوار کردن",
+    "مقابله",
+    "شکست تلاشهای ترمیمی",
+    "آغاز طوفانی",
+    "فوران هیجان"
+  ];
+  const activeConflictSum = activeConflictKeys.reduce((acc, key) => acc + (scoresMap[key] || 0), 0);
+  const activeConflictPercent = Math.round(activeConflictSum / activeConflictKeys.length);
+
+  // ۲. محاسبه شاخص فاصله‌گیری (همان درصد خرده‌مقیاس سردی)
+  const distancingPercent = scoresMap["سردی"] || 0;
+
+  // ۳. تحلیل ماتریس ۲×۲ وضعیت رابطه بر مبنای مرز ۵۰ درصد
+  const isConflictHigh = activeConflictPercent >= 50;
+  const isDistancingHigh = distancingPercent >= 50;
+
+  let matrixResult = {
+    title: "",
+    desc: "",
+    borderColor: "",
+    textColor: ""
+  };
+
+  if (!isConflictHigh && !isDistancingHigh) {
+    matrixResult = {
+      title: "رابطه سالم و پایدار",
+      desc: "میزان تعارضات فعال و رفتارهای فاصله‌گیرانه در رابطه شما پایین است. رابطه در وضعیت مطلوب، منعطف و امن قرار دارد.",
+      borderColor: "#22c55e",
+      textColor: "#4ade80"
+    };
+  } else if (!isConflictHigh && isDistancingHigh) {
+    matrixResult = {
+      title: "طلاق عاطفی",
+      desc: "تعارض و تنش کلامی بالایی در رابطه دیده نمی‌شود، اما سطح فاصله‌گیری و سردی عاطفی بسیار زیاد است. رابطه وارد سکوت و انزوای عاطفی شده است.",
+      borderColor: "#f59e0b",
+      textColor: "#fbbf24"
+    };
+  } else if (isConflictHigh && !isDistancingHigh) {
+    matrixResult = {
+      title: "پرتنش اما درگیر",
+      desc: "تعارض، جروبحث و هیجانات بالا در رابطه مشهود است؛ با این حال هنوز احساس تعلق، درگیری و پیوند برقرار است و سردی حاکم نشده است.",
+      borderColor: "#fb923c",
+      textColor: "#f97316"
+    };
+  } else {
+    matrixResult = {
+      title: "بحرانی آستانه طلاق",
+      desc: "هم میزان تعارضات فعال و هم میزان فاصله‌گیری و سردی در سطح بالایی قرار دارد. رابطه دچار فرسودگی شدید شده و نیازمند مداخله جدی تخصصی زوج‌درمانی است.",
+      borderColor: "#ef4444",
+      textColor: "#f87171"
+    };
+  }
+
+  // آماده‌سازی داده‌های پلود برای شیت
   const payload = {
     name: document.getElementById("p_name").value,
     gender: document.getElementById("p_gender").value,
@@ -377,7 +980,10 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     dating: document.getElementById("p_dating").value,
     overallPercent: overallPercent,
     gottmanNormScore: normScore,
-    scores: scoresMap
+    scores: scoresMap,
+    activeConflictPercent: activeConflictPercent,
+    distancingPercent: distancingPercent,
+    matrixStatus: matrixResult.title
   };
 
   if (GOOGLE_SHEET_URL && !GOOGLE_SHEET_URL.includes("YOUR_GOOGLE")) {
@@ -393,70 +999,19 @@ document.getElementById("quiz-form").addEventListener("submit", async function(e
     }
   }
 
-  document.getElementById("survey-view").style.display = "none";
-  const resultView = document.getElementById("result-view");
-  resultView.style.display = "block";
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const info = {
+    name: payload.name,
+    conflict: activeConflictPercent,
+    distancing: distancingPercent,
+    matrixResult: matrixResult
+  };
 
-  const labels = all12Results.map(r => r.id.toString());
-  const dataValues = all12Results.map(r => r.percent);
-  const barColors = all12Results.map(r => r.color);
-
-  const ctx = document.getElementById("main_comparison_chart").getContext("2d");
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: labels,
-      datasets: [{
-        data: dataValues,
-        backgroundColor: barColors,
-        borderRadius: 6,
-        barPercentage: 0.72
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: {
-          left: 35
-        }
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            title: (items) => `شاخص شماره ${items[0].label}`,
-            label: (context) => `درصد دقیق: ${context.raw}٪`
-          }
-        },
-        datalabels: {
-          anchor: 'end',
-          align: 'left',
-          color: '#ffffff',
-          offset: 4,
-          font: {
-            weight: 'bold',
-            size: 11
-          },
-          formatter: (value) => value + '٪'
-        }
-      },
-      scales: {
-        x: {
-          min: 0,
-          max: 100,
-          ticks: { color: "#94a3b8", stepSize: 25, callback: (v) => v + "%" },
-          grid: { color: "#1e293b" }
-        },
-        y: {
-          ticks: { color: "#f8fafc", font: { size: 13, weight: "bold" } },
-          grid: { display: false }
-        }
-      }
-    }
-  });
+  // مکث کوتاه برای حس «تحلیل»، سپس محو شدن فرم و نمایش نتیجه
+  setTimeout(() => {
+    const surveyView = document.getElementById("survey-view");
+    surveyView.classList.add("leaving");
+    setTimeout(() => showResult(info), reduceMotion ? 0 : 420);
+  }, reduceMotion ? 0 : 1000);
 });
 </script>
 </body>
